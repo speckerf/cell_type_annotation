@@ -1,0 +1,13 @@
+---
+title: "Home"
+site: workflowr::wflow_site
+output:
+  workflowr::wflow_html:
+    toc: false
+editor_options:
+  chunk_output_type: console
+---
+
+Welcome to the website of Felix Specker's & Stine Anzböck's individual project in the course _Statistical Analysis of High-Throughput Genomic and Transcriptomic Data_ on three different scRNA cell type annotation methods: _SingleR_, _scClassify_, _Seurat_.
+
+

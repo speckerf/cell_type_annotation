@@ -1,0 +1,120 @@
+---
+title: "Data preparation Baron (2016)"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: console
+bibliography: ../ref.bibtex
+---
+
+```{r loading packages}
+suppressMessages(library(scRNAseq))
+suppressMessages(library(AnnotationHub))
+suppressMessages(library(scater))
+suppressMessages(library(scran))
+suppressMessages(library(scuttle))
+suppressMessages(library(scDblFinder))
+suppressMessages(library(BiocParallel))
+suppressMessages(library(kableExtra))
+```
+
+# Loading the data
+
+We loaded the Baron dataset directly from the _scRNAseq_ package as a SingleCellExperiment object. The dataset contains droplet-based scRNA-seq data from human pancreas cells from 4 different donors [@baron2016single]. 
+
+```{r loading data, warning=FALSE, message=FALSE}
+sce.baron <- suppressMessages(BaronPancreasData(ensembl = TRUE))
+dim(sce.baron)
+```
+
+The option __ensebml = TRUE__ ensures that the gene symbols are converted to Ensembl IDs. Any genes that could not be matched to an Ensembl ID were discarded (1280 genes). We were left with $18845$ genes from $8569$ different cells. 
+
+# Quality control
+
+Quality control was performed on the loaded Baron dataset. 
+
+First we tried to identify cells with relatively high proportion of mitochondrial genes, which should be removed, as this indicates damaged nuclei, and thus low-quality cells.
+
+```{r qc baron, warning=FALSE, message=FALSE}
+location <- rowRanges(sce.baron)
+isMito <- grepl("^mt-", location$originalName, ignore.case=TRUE) | seqnames(location)=="MT" | seqnames(location)=="mt"
+ifelse(any(isMito), "There has been found at least one mitochondrial gene",
+       "There have not been found any mitochondrial genes")
+df <- perCellQCMetrics(sce.baron)
+reasons <- quickPerCellQC(df)
+knitr::kable(colSums(as.matrix(reasons)))
+#sce.baron <- sce.baron[,!apply(reasons, MARGIN = 1, any)]
+```
+
+Suprisingly, we saw that there are no mitochondrial genes left in the dataset. Also, there were no cells that could be excluded with low library site or low number of features. Checking with the paper, the authors stated to have removed all mitochondrial genes, as well as filtered out cells with a limited number of detected genes [@baron2016single]. 
+
+```{r qc metrics, warning=FALSE, message=FALSE}
+# save per cell and per feature QC metrics:
+sce.baron <- addPerCellQC(sce.baron, percent.top=c(5,10))
+sce.baron <- addPerFeatureQC(sce.baron)
+```
+
+We then investigated the dataset visually. 
+
+```{r plot qc 1, warning=FALSE, message=FALSE}
+qc <- as.data.frame(colData(sce.baron))
+ggplot(qc, aes(donor)) + geom_bar() + ggtitle("Number of cells per donor")
+```
+
+From the barplot it can be seen that there are different number of cells per donor. This supports the above finding that the authors already had removed a lot of cells based on QC beforehand.
+
+```{r plot qc 2, warning=FALSE, message=FALSE}
+ggplot(qc, aes(sum)) + geom_histogram() + facet_wrap(~donor) + scale_x_continuous(trans = 'log10') + ggtitle("Distribution of libary sizes per donor") + ylab("Number of cells") + xlab("library size")
+```
+
+The histograms of library sizes look ok: For each donor, library sizes were approximately normally distributed.
+
+```{r plot qc 3, warning=FALSE, message=FALSE}
+ggplot(qc, aes(sum, detected)) + geom_point() + geom_density2d() + ylab("Number of detected genes") + xlab("Library size") + scale_x_continuous(trans = 'log10') + scale_y_continuous(trans = 'log10') + ggtitle("Library size vs. number of detected genes per cell")
+```
+
+As we can see from the plot there are no outliers on the lower end of library size and/or number of detected genes.
+
+Thus, the authors seem to have done a good job on the QC of the dataset.
+
+# Unifying Label Names
+
+In order to be able to compare the two datasets by @muraro2016single and @baron2016single, we need to ensure that they have the same cell type labels. Therefore we remove six cell types which are not present in the @muraro2016single dataset. We are left with 8012 cells, belonging to seven different cell types. 
+
+```{r harmonize labels, warning=FALSE, message=FALSE}
+sce.baron <- sce.baron[,!(sce.baron$label %in% c("t_cell", "mast", "schwann", "macrophage",
+                                                 "activated_stellate", "quiescent_stellate"))] #removing
+baron.labels.counts <- as.data.frame(table(sce.baron$label))
+names(baron.labels.counts) <- c("cell type", "frequency")
+total <- data.frame("total", sum(baron.labels.counts$frequency))
+names(total) <- c("cell type", "frequency")
+baron.labels.counts <- rbind(baron.labels.counts, total)
+saveRDS(baron.labels.counts, file="data/baron.labels.counts.rds")
+knitr::kable(baron.labels.counts) %>%
+  kable_styling()%>%
+  row_spec(9,bold=T)
+```
+
+As we can see and as we might expect, there are major differences in the abundance of cell types ranging from 18 epsilon cells to 2525 beta cells.
+
+# tSNE plot
+
+Finally, we produce normalized counts and perform dimensionality reduction for visual inspection purposes. 
+
+```{r log counts, warning=FALSE, message=FALSE}
+sce.baron <- logNormCounts(sce.baron)
+sce.baron <- runPCA(sce.baron)
+sce.baron <- runTSNE(sce.baron, dimred="PCA")
+```
+
+```{r t-SNE plot, warning=FALSE, message=FALSE}
+plotReducedDim(sce.baron, "TSNE", colour_by="label") #original labels
+```
+
+We can see that the "true" cell type labels correspond quite nicely to the clusters in the tSNE plot. 
+
+## Save object for downstream analyses
+```{r save sce object, warning=FALSE, message=FALSE}
+saveRDS(sce.baron,file = "data/sce_baron.rds")
+```
+
+# References

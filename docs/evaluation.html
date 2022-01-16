@@ -1,0 +1,2434 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>Evaluation</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/flatly.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
+<link href="site_libs/anchor-sections-1.0/anchor-sections.css" rel="stylesheet" />
+<script src="site_libs/anchor-sections-1.0/anchor-sections.js"></script>
+<script src="site_libs/kePrint-0.0.1/kePrint.js"></script>
+<link href="site_libs/lightable-0.0.1/lightable.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+
+<link rel="icon" href="https://github.com/workflowr/workflowr-assets/raw/master/img/reproducible.png">
+<!-- Add a small amount of space between sections. -->
+<style type="text/css">
+div.section {
+  padding-top: 12px;
+}
+</style>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css" data-origin="pandoc">
+a.sourceLine { display: inline-block; line-height: 1.25; }
+a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
+a.sourceLine:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; position: relative; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+code.sourceCode { white-space: pre-wrap; }
+a.sourceLine { text-indent: -1em; padding-left: 1em; }
+}
+pre.numberSource a.sourceLine
+  { position: relative; left: -4em; }
+pre.numberSource a.sourceLine::before
+  { content: attr(data-line-number);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; pointer-events: all; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    background-color: #ffffff;
+    color: #a0a0a0;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #a0a0a0;  padding-left: 4px; }
+div.sourceCode
+  { color: #1f1c1b; background-color: #ffffff; }
+@media screen {
+a.sourceLine::before { text-decoration: underline; }
+}
+code span. { color: #1f1c1b; } /* Normal */
+code span.al { color: #bf0303; background-color: #f7e6e6; font-weight: bold; } /* Alert */
+code span.an { color: #ca60ca; } /* Annotation */
+code span.at { color: #0057ae; } /* Attribute */
+code span.bn { color: #b08000; } /* BaseN */
+code span.bu { color: #644a9b; font-weight: bold; } /* BuiltIn */
+code span.cf { color: #1f1c1b; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #924c9d; } /* Char */
+code span.cn { color: #aa5500; } /* Constant */
+code span.co { color: #898887; } /* Comment */
+code span.cv { color: #0095ff; } /* CommentVar */
+code span.do { color: #607880; } /* Documentation */
+code span.dt { color: #0057ae; } /* DataType */
+code span.dv { color: #b08000; } /* DecVal */
+code span.er { color: #bf0303; text-decoration: underline; } /* Error */
+code span.ex { color: #0095ff; font-weight: bold; } /* Extension */
+code span.fl { color: #b08000; } /* Float */
+code span.fu { color: #644a9b; } /* Function */
+code span.im { color: #ff5500; } /* Import */
+code span.in { color: #b08000; } /* Information */
+code span.kw { color: #1f1c1b; font-weight: bold; } /* Keyword */
+code span.op { color: #1f1c1b; } /* Operator */
+code span.ot { color: #006e28; } /* Other */
+code span.pp { color: #006e28; } /* Preprocessor */
+code span.re { color: #0057ae; background-color: #e0e9f8; } /* RegionMarker */
+code span.sc { color: #3daee9; } /* SpecialChar */
+code span.ss { color: #ff5500; } /* SpecialString */
+code span.st { color: #bf0303; } /* String */
+code span.va { color: #0057ae; } /* Variable */
+code span.vs { color: #bf0303; } /* VerbatimString */
+code span.wa { color: #bf0303; } /* Warning */
+
+.sourceCode .row {
+  width: 100%;
+}
+.sourceCode {
+  overflow-x: auto;
+}
+.code-folding-btn {
+  margin-right: -30px;
+}
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    for (var j = 0; j < rules.length; j++) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') continue;
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 51px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h2 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h3 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h4 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h5 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h6 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #ffffff;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">project-cell-type-annotation</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">
+    <span class="fa fa-home"></span>
+     
+    Home
+  </a>
+</li>
+<li>
+  <a href="overview.html">Overview</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Preprocessing
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="dataprep_baron.html">Baron Dataset</a>
+    </li>
+    <li>
+      <a href="dataprep_muraro.html">Muraro Dataset</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Methods
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="SingleR.html">SingleR</a>
+    </li>
+    <li>
+      <a href="scClassify.html">scClassify</a>
+    </li>
+    <li>
+      <a href="Seurat.html">Seurat</a>
+    </li>
+  </ul>
+</li>
+<li>
+  <a href="evaluation.html">Evaluation</a>
+</li>
+<li>
+  <a href="license.html">License</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+<div class="btn-group pull-right">
+<button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu" style="min-width: 50px;">
+<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
+</ul>
+</div>
+
+
+
+<h1 class="title toc-ignore">Evaluation</h1>
+
+</div>
+
+
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-report" data-toggle="collapse" data-target="#workflowr-report">
+<span class="glyphicon glyphicon-list" aria-hidden="true"></span> workflowr <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+</button>
+</p>
+<div id="workflowr-report" class="collapse">
+<ul class="nav nav-tabs">
+<li class="active">
+<a data-toggle="tab" href="#summary">Summary</a>
+</li>
+<li>
+<a data-toggle="tab" href="#checks"> Checks <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> </a>
+</li>
+<li>
+<a data-toggle="tab" href="#versions">Past versions</a>
+</li>
+</ul>
+<div class="tab-content">
+<div id="summary" class="tab-pane fade in active">
+<p>
+<strong>Last updated:</strong> 2021-01-07
+</p>
+<p>
+<strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 0
+</p>
+<p>
+<strong>Knit directory:</strong> <code>project-cell-type-annotation/</code> <span class="glyphicon glyphicon-question-sign" aria-hidden="true" title="This is the local directory in which the code in this file was executed."> </span>
+</p>
+<p>
+This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis was created with <a
+  href="https://github.com/jdblischak/workflowr">workflowr</a> (version 1.6.2). The <em>Checks</em> tab describes the reproducibility checks that were applied when the results were created. The <em>Past versions</em> tab lists the development history.
+</p>
+<hr>
+</div>
+<div id="checks" class="tab-pane fade">
+<div id="workflowr-checks" class="panel-group">
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguptodate"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>R Markdown file:</strong> up-to-date </a>
+</p>
+</div>
+<div id="strongRMarkdownfilestronguptodate" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great! Since the R Markdown file has been committed to the Git repository, you know the exact version of the code that produced these results.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongEnvironmentstrongempty"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Environment:</strong> empty </a>
+</p>
+</div>
+<div id="strongEnvironmentstrongempty" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! The global environment was empty. Objects defined in the global environment can affect the analysis in your R Markdown file in unknown ways. For reproduciblity it’s best to always run the code in an empty environment.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSeedstrongcodesetseed20201203code"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Seed:</strong> <code>set.seed(20201203)</code> </a>
+</p>
+</div>
+<div id="strongSeedstrongcodesetseed20201203code" class="panel-collapse collapse">
+<div class="panel-body">
+<p>The command <code>set.seed(20201203)</code> was run prior to running the code in the R Markdown file. Setting a seed ensures that any results that rely on randomness, e.g. subsampling or permutations, are reproducible.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSessioninformationstrongrecorded"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Session information:</strong> recorded </a>
+</p>
+</div>
+<div id="strongSessioninformationstrongrecorded" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Recording the operating system, R version, and package versions is critical for reproducibility.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongCachestrongnone"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Cache:</strong> none </a>
+</p>
+</div>
+<div id="strongCachestrongnone" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Nice! There were no cached chunks for this analysis, so you can be confident that you successfully produced the results during this run.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongFilepathsstrongrelative"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>File paths:</strong> relative </a>
+</p>
+</div>
+<div id="strongFilepathsstrongrelative" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Using relative paths to the files within your workflowr project makes it easier to run your code on other machines.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomsta426hs2020projectcelltypeannotationtreeed62d96c90945276a7d4fc5be6386cd25940056ctargetblanked62d96a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/sta426hs2020/project-cell-type-annotation/tree/ed62d96c90945276a7d4fc5be6386cd25940056c" target="_blank">ed62d96</a> </a>
+</p>
+</div>
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomsta426hs2020projectcelltypeannotationtreeed62d96c90945276a7d4fc5be6386cd25940056ctargetblanked62d96a" class="panel-collapse collapse">
+<div class="panel-body">
+<p>
+Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility.
+</p>
+<p>
+The results in this page were generated with repository version <a href="https://github.com/sta426hs2020/project-cell-type-annotation/tree/ed62d96c90945276a7d4fc5be6386cd25940056c" target="_blank">ed62d96</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
+</p>
+<p>
+Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
+</p>
+<pre><code>
+Ignored files:
+    Ignored:    .Rhistory
+    Ignored:    .Rproj.user/
+
+Unstaged changes:
+    Modified:   ref.bibtex
+
+</code></pre>
+<p>
+Note that any generated files, e.g. HTML, png, CSS, etc., are not included in this status report because it is ok for generated content to have uncommitted changes.
+</p>
+</div>
+</div>
+</div>
+</div>
+<hr>
+</div>
+<div id="versions" class="tab-pane fade">
+
+<p>
+These are the previous versions of the repository in which changes were made to the R Markdown (<code>analysis/evaluation.Rmd</code>) and HTML (<code>docs/evaluation.html</code>) files. If you’ve configured a remote Git repository (see <code>?wflow_git_remote</code>), click on the hyperlinks in the table below to view the files as they were in that past version.
+</p>
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+File
+</th>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+<th>
+Message
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/sta426hs2020/project-cell-type-annotation/blob/ed62d96c90945276a7d4fc5be6386cd25940056c/analysis/evaluation.Rmd" target="_blank">ed62d96</a>
+</td>
+<td>
+speckerf
+</td>
+<td>
+2021-01-07
+</td>
+<td>
+conclusion for methods
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/sta426hs2020/project-cell-type-annotation/4e0aa604f43f0b91a7756d556a164e967c229d4b/docs/evaluation.html" target="_blank">4e0aa60</a>
+</td>
+<td>
+speckerf
+</td>
+<td>
+2021-01-07
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/sta426hs2020/project-cell-type-annotation/blob/dc665d19fa936b8af4a86f2cca012b758214029d/analysis/evaluation.Rmd" target="_blank">dc665d1</a>
+</td>
+<td>
+speckerf
+</td>
+<td>
+2021-01-07
+</td>
+<td>
+conclusion for methods
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/sta426hs2020/project-cell-type-annotation/35eff5944ba04c572e1148673a0024480a651135/docs/evaluation.html" target="_blank">35eff59</a>
+</td>
+<td>
+speckerf
+</td>
+<td>
+2021-01-07
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/sta426hs2020/project-cell-type-annotation/blob/97faffd9ceff36e974389d911bf05c0f57379dc4/analysis/evaluation.Rmd" target="_blank">97faffd</a>
+</td>
+<td>
+speckerf
+</td>
+<td>
+2021-01-07
+</td>
+<td>
+conclusion for methods
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/sta426hs2020/project-cell-type-annotation/0a1f6e2ddf339761c3d2b0c3665811d5d7257cba/docs/evaluation.html" target="_blank">0a1f6e2</a>
+</td>
+<td>
+stinea98
+</td>
+<td>
+2021-01-06
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/sta426hs2020/project-cell-type-annotation/blob/46cc538b437a03ad16df01888b1d8fbaf8520b70/analysis/evaluation.Rmd" target="_blank">46cc538</a>
+</td>
+<td>
+stinea98
+</td>
+<td>
+2021-01-06
+</td>
+<td>
+wflow_publish(“analysis/evaluation.Rmd”)
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/sta426hs2020/project-cell-type-annotation/66be8a0409db831b3e3e43080e012e3ad0f19a1d/docs/evaluation.html" target="_blank">66be8a0</a>
+</td>
+<td>
+stinea98
+</td>
+<td>
+2021-01-06
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/sta426hs2020/project-cell-type-annotation/blob/9667560616b8486582c4021f0005c00ffc48bbcd/analysis/evaluation.Rmd" target="_blank">9667560</a>
+</td>
+<td>
+stinea98
+</td>
+<td>
+2021-01-06
+</td>
+<td>
+wflow_publish(“analysis/evaluation.Rmd”)
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/sta426hs2020/project-cell-type-annotation/d82502900a5d5e47f77f932d6476eff73b12aa93/docs/evaluation.html" target="_blank">d825029</a>
+</td>
+<td>
+stinea98
+</td>
+<td>
+2021-01-06
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/sta426hs2020/project-cell-type-annotation/blob/b10f7385e692bdc2465fb803533a5f09894b5461/analysis/evaluation.Rmd" target="_blank">b10f738</a>
+</td>
+<td>
+stinea98
+</td>
+<td>
+2021-01-06
+</td>
+<td>
+wflow_publish(“analysis/evaluation.Rmd”)
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/sta426hs2020/project-cell-type-annotation/7a1feed1cc8a6388dd6d2fbfd38c5a32f152353f/docs/evaluation.html" target="_blank">7a1feed</a>
+</td>
+<td>
+stinea98
+</td>
+<td>
+2021-01-06
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/sta426hs2020/project-cell-type-annotation/blob/23aa62db3f874ea69088b8911ea07fa42e90cbc3/analysis/evaluation.Rmd" target="_blank">23aa62d</a>
+</td>
+<td>
+stinea98
+</td>
+<td>
+2021-01-06
+</td>
+<td>
+wflow_publish(“analysis/evaluation.Rmd”)
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/sta426hs2020/project-cell-type-annotation/a380f2211bb87921b15964196267cc0a04acad01/docs/evaluation.html" target="_blank">a380f22</a>
+</td>
+<td>
+stinea98
+</td>
+<td>
+2021-01-06
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/sta426hs2020/project-cell-type-annotation/blob/67d8493606e94c5ee5f0bfb771bf0604d22a13e2/analysis/evaluation.Rmd" target="_blank">67d8493</a>
+</td>
+<td>
+stinea98
+</td>
+<td>
+2021-01-06
+</td>
+<td>
+wflow_publish(“analysis/evaluation.Rmd”)
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/sta426hs2020/project-cell-type-annotation/4fd02cc8a540c6fc0fd6a364bf1caad2e92468e3/docs/evaluation.html" target="_blank">4fd02cc</a>
+</td>
+<td>
+stinea98
+</td>
+<td>
+2021-01-05
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/sta426hs2020/project-cell-type-annotation/blob/508742299013f8a79569a6f3c423bab21138b7c7/analysis/evaluation.Rmd" target="_blank">5087422</a>
+</td>
+<td>
+stinea98
+</td>
+<td>
+2021-01-05
+</td>
+<td>
+wflow_publish(“analysis/evaluation.Rmd”)
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/sta426hs2020/project-cell-type-annotation/9f68593b37ea32e30e526e862911d53e8e62fdfa/docs/evaluation.html" target="_blank">9f68593</a>
+</td>
+<td>
+stinea98
+</td>
+<td>
+2021-01-03
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/sta426hs2020/project-cell-type-annotation/blob/839f076604786d6607f1fd58f0753f634af49ad9/analysis/evaluation.Rmd" target="_blank">839f076</a>
+</td>
+<td>
+stinea98
+</td>
+<td>
+2021-01-03
+</td>
+<td>
+wflow_publish(“analysis/evaluation.Rmd”)
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/sta426hs2020/project-cell-type-annotation/f51946750a14f00bc75db37fc8499aaa5ee5ed87/docs/evaluation.html" target="_blank">f519467</a>
+</td>
+<td>
+stinea98
+</td>
+<td>
+2021-01-03
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/sta426hs2020/project-cell-type-annotation/blob/05f7cba57edeff67211129c15c0fbe3991417292/analysis/evaluation.Rmd" target="_blank">05f7cba</a>
+</td>
+<td>
+stinea98
+</td>
+<td>
+2021-01-03
+</td>
+<td>
+wflow_publish(all = TRUE)
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/sta426hs2020/project-cell-type-annotation/05f7cba57edeff67211129c15c0fbe3991417292/docs/evaluation.html" target="_blank">05f7cba</a>
+</td>
+<td>
+stinea98
+</td>
+<td>
+2021-01-03
+</td>
+<td>
+wflow_publish(all = TRUE)
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/sta426hs2020/project-cell-type-annotation/f4dd7447aee12c2685010b0006aafabd487c1c49/docs/evaluation.html" target="_blank">f4dd744</a>
+</td>
+<td>
+stinea98
+</td>
+<td>
+2021-01-02
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/sta426hs2020/project-cell-type-annotation/blob/97203af501d57a03ee66393d07284c6fb177f13b/analysis/evaluation.Rmd" target="_blank">97203af</a>
+</td>
+<td>
+stinea98
+</td>
+<td>
+2021-01-02
+</td>
+<td>
+wflow_publish(“analysis/evaluation.Rmd”)
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/sta426hs2020/project-cell-type-annotation/7925c3a629ee2be84cb5ba4d9b3c8a462227c99c/docs/evaluation.html" target="_blank">7925c3a</a>
+</td>
+<td>
+stinea98
+</td>
+<td>
+2021-01-02
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/sta426hs2020/project-cell-type-annotation/blob/564fd5cc7b3ec6ae53882fe6e7b54613ef052802/analysis/evaluation.Rmd" target="_blank">564fd5c</a>
+</td>
+<td>
+stinea98
+</td>
+<td>
+2021-01-02
+</td>
+<td>
+wflow_publish(“analysis/evaluation.Rmd”)
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/sta426hs2020/project-cell-type-annotation/blob/d3bb0c2e871175fe2c5829148f8179373d964b50/analysis/evaluation.Rmd" target="_blank">d3bb0c2</a>
+</td>
+<td>
+stinea98
+</td>
+<td>
+2021-01-02
+</td>
+<td>
+updated evaluation
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/sta426hs2020/project-cell-type-annotation/d3bb0c2e871175fe2c5829148f8179373d964b50/docs/evaluation.html" target="_blank">d3bb0c2</a>
+</td>
+<td>
+stinea98
+</td>
+<td>
+2021-01-02
+</td>
+<td>
+updated evaluation
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/sta426hs2020/project-cell-type-annotation/blob/eb5737336d424d38a569ce0a4f356222ee6063e3/analysis/evaluation.Rmd" target="_blank">eb57373</a>
+</td>
+<td>
+stinea98
+</td>
+<td>
+2021-01-02
+</td>
+<td>
+added evaluation and updated README
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/sta426hs2020/project-cell-type-annotation/eb5737336d424d38a569ce0a4f356222ee6063e3/docs/evaluation.html" target="_blank">eb57373</a>
+</td>
+<td>
+stinea98
+</td>
+<td>
+2021-01-02
+</td>
+<td>
+added evaluation and updated README
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<hr>
+</div>
+</div>
+</div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="kw">suppressMessages</span>(<span class="kw">library</span>(pdfCluster))</a>
+<a class="sourceLine" id="cb1-2" data-line-number="2"><span class="kw">suppressMessages</span>(<span class="kw">library</span>(ggplot2))</a>
+<a class="sourceLine" id="cb1-3" data-line-number="3"><span class="kw">suppressMessages</span>(<span class="kw">library</span>(tidyr))</a>
+<a class="sourceLine" id="cb1-4" data-line-number="4"><span class="kw">suppressMessages</span>(<span class="kw">library</span>(ROCR))</a>
+<a class="sourceLine" id="cb1-5" data-line-number="5"><span class="kw">suppressMessages</span>(<span class="kw">library</span>(formattable))</a>
+<a class="sourceLine" id="cb1-6" data-line-number="6"><span class="kw">suppressMessages</span>(<span class="kw">library</span>(kableExtra))</a>
+<a class="sourceLine" id="cb1-7" data-line-number="7"><span class="kw">suppressMessages</span>(<span class="kw">library</span>(knitr))</a></code></pre></div>
+<p>The performance of the three classifiers will be evaluated by the Adjusted Rand Index and F1 scores for the individual class labels.</p>
+<div id="loading-the-data" class="section level1">
+<h1>Loading the data</h1>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1">singleR.pred.baron.labels &lt;-<span class="st"> </span><span class="kw">readRDS</span>(<span class="dt">file=</span><span class="st">&quot;data/singleR.pred.baron.labels.rds&quot;</span>)</a>
+<a class="sourceLine" id="cb2-2" data-line-number="2">singleR.true.baron.labels &lt;-<span class="st"> </span><span class="kw">readRDS</span>(<span class="dt">file=</span><span class="st">&quot;data/singleR.true.baron.labels.rds&quot;</span>)</a>
+<a class="sourceLine" id="cb2-3" data-line-number="3">singleR.pred.muraro.labels &lt;-<span class="st"> </span><span class="kw">readRDS</span>(<span class="dt">file=</span><span class="st">&quot;data/singleR.pred.muraro.labels.rds&quot;</span>)</a>
+<a class="sourceLine" id="cb2-4" data-line-number="4">singleR.true.muraro.labels &lt;-<span class="st"> </span><span class="kw">readRDS</span>(<span class="dt">file=</span><span class="st">&quot;data/singleR.true.muraro.labels.rds&quot;</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1">sc.pred.baron.labels &lt;-<span class="st"> </span><span class="kw">readRDS</span>(<span class="dt">file=</span><span class="st">&quot;data/scClassify.pred.baron.labels.rds&quot;</span>)</a>
+<a class="sourceLine" id="cb3-2" data-line-number="2">sc.true.baron.labels &lt;-<span class="st"> </span><span class="kw">readRDS</span>(<span class="dt">file=</span><span class="st">&quot;data/scClassify.true.baron.labels.rds&quot;</span>)</a>
+<a class="sourceLine" id="cb3-3" data-line-number="3">sc.pred.muraro.labels &lt;-<span class="st"> </span><span class="kw">readRDS</span>(<span class="dt">file=</span><span class="st">&quot;data/scClassify.pred.muraro.labels.rds&quot;</span>)</a>
+<a class="sourceLine" id="cb3-4" data-line-number="4">sc.true.muraro.labels &lt;-<span class="st"> </span><span class="kw">readRDS</span>(<span class="dt">file=</span><span class="st">&quot;data/scClassify.true.muraro.labels.rds&quot;</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1">seurat.pred.baron.labels &lt;-<span class="st"> </span><span class="kw">readRDS</span>(<span class="dt">file=</span><span class="st">&quot;data/Seurat.pred.baron.labels.rds&quot;</span>)</a>
+<a class="sourceLine" id="cb4-2" data-line-number="2">seurat.true.baron.labels &lt;-<span class="st"> </span><span class="kw">readRDS</span>(<span class="dt">file=</span><span class="st">&quot;data/Seurat.true.baron.labels.rds&quot;</span>)</a>
+<a class="sourceLine" id="cb4-3" data-line-number="3">seurat.pred.muraro.labels &lt;-<span class="st"> </span><span class="kw">readRDS</span>(<span class="dt">file=</span><span class="st">&quot;data/Seurat.pred.muraro.labels.rds&quot;</span>)</a>
+<a class="sourceLine" id="cb4-4" data-line-number="4">seurat.true.muraro.labels &lt;-<span class="st"> </span><span class="kw">readRDS</span>(<span class="dt">file=</span><span class="st">&quot;data/Seurat.true.muraro.labels.rds&quot;</span>)</a></code></pre></div>
+</div>
+<div id="distribution-of-labels" class="section level1">
+<h1>Distribution of Labels</h1>
+<div id="annotating-baron-2016" class="section level2">
+<h2>Annotating Baron (2016)</h2>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" data-line-number="1">table.B.true &lt;-<span class="st"> </span><span class="kw">as.data.frame</span>(<span class="kw">table</span>(singleR.true.baron.labels))</a>
+<a class="sourceLine" id="cb5-2" data-line-number="2"><span class="kw">names</span>(table.B.true) &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;cell_type&quot;</span>, <span class="st">&quot;True Baron&quot;</span>)</a>
+<a class="sourceLine" id="cb5-3" data-line-number="3">table.B.singleR &lt;-<span class="st"> </span><span class="kw">as.data.frame</span>(<span class="kw">table</span>(singleR.pred.baron.labels))</a>
+<a class="sourceLine" id="cb5-4" data-line-number="4"><span class="kw">names</span>(table.B.singleR) &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;cell_type&quot;</span>, <span class="st">&quot;SingleR&quot;</span>)</a>
+<a class="sourceLine" id="cb5-5" data-line-number="5">table.B.sc &lt;-<span class="st"> </span><span class="kw">as.data.frame</span>(<span class="kw">table</span>(sc.pred.baron.labels))</a>
+<a class="sourceLine" id="cb5-6" data-line-number="6"><span class="kw">names</span>(table.B.sc) &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;cell_type&quot;</span>, <span class="st">&quot;scClassify&quot;</span>)</a>
+<a class="sourceLine" id="cb5-7" data-line-number="7">table.B.seurat &lt;-<span class="st"> </span><span class="kw">as.data.frame</span>(<span class="kw">table</span>(seurat.pred.baron.labels))</a>
+<a class="sourceLine" id="cb5-8" data-line-number="8"><span class="kw">names</span>(table.B.seurat) &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;cell_type&quot;</span>, <span class="st">&quot;Seurat&quot;</span>)</a>
+<a class="sourceLine" id="cb5-9" data-line-number="9">table.B &lt;-<span class="st"> </span><span class="kw">merge</span>(<span class="kw">merge</span>(<span class="kw">merge</span>(table.B.true, table.B.singleR, <span class="dt">by=</span><span class="st">&quot;cell_type&quot;</span>),</a>
+<a class="sourceLine" id="cb5-10" data-line-number="10">                       table.B.sc, <span class="dt">by=</span><span class="st">&quot;cell_type&quot;</span>), table.B.seurat, <span class="dt">by=</span><span class="st">&quot;cell_type&quot;</span>)</a>
+<a class="sourceLine" id="cb5-11" data-line-number="11">knitr<span class="op">::</span><span class="kw">kable</span>(table.B) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb5-12" data-line-number="12"><span class="st">  </span><span class="kw">kable_styling</span>()<span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb5-13" data-line-number="13"><span class="st">  </span><span class="kw">row_spec</span>(<span class="kw">c</span>(<span class="dv">1</span>,<span class="dv">5</span>),<span class="dt">bold=</span>T)</a></code></pre></div>
+<table class="table" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:left;">
+cell_type
+</th>
+<th style="text-align:right;">
+True Baron
+</th>
+<th style="text-align:right;">
+SingleR
+</th>
+<th style="text-align:right;">
+scClassify
+</th>
+<th style="text-align:right;">
+Seurat
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;font-weight: bold;">
+acinar
+</td>
+<td style="text-align:right;font-weight: bold;">
+898
+</td>
+<td style="text-align:right;font-weight: bold;">
+1087
+</td>
+<td style="text-align:right;font-weight: bold;">
+1088
+</td>
+<td style="text-align:right;font-weight: bold;">
+1072
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+alpha
+</td>
+<td style="text-align:right;">
+2289
+</td>
+<td style="text-align:right;">
+2298
+</td>
+<td style="text-align:right;">
+2306
+</td>
+<td style="text-align:right;">
+2294
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+beta
+</td>
+<td style="text-align:right;">
+2451
+</td>
+<td style="text-align:right;">
+2442
+</td>
+<td style="text-align:right;">
+2543
+</td>
+<td style="text-align:right;">
+2456
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+delta
+</td>
+<td style="text-align:right;">
+483
+</td>
+<td style="text-align:right;">
+490
+</td>
+<td style="text-align:right;">
+422
+</td>
+<td style="text-align:right;">
+492
+</td>
+</tr>
+<tr>
+<td style="text-align:left;font-weight: bold;">
+ductal
+</td>
+<td style="text-align:right;font-weight: bold;">
+1054
+</td>
+<td style="text-align:right;font-weight: bold;">
+870
+</td>
+<td style="text-align:right;font-weight: bold;">
+837
+</td>
+<td style="text-align:right;font-weight: bold;">
+873
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+endothelial
+</td>
+<td style="text-align:right;">
+250
+</td>
+<td style="text-align:right;">
+244
+</td>
+<td style="text-align:right;">
+235
+</td>
+<td style="text-align:right;">
+240
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+epsilon
+</td>
+<td style="text-align:right;">
+9
+</td>
+<td style="text-align:right;">
+7
+</td>
+<td style="text-align:right;">
+8
+</td>
+<td style="text-align:right;">
+6
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+gamma
+</td>
+<td style="text-align:right;">
+223
+</td>
+<td style="text-align:right;">
+219
+</td>
+<td style="text-align:right;">
+218
+</td>
+<td style="text-align:right;">
+224
+</td>
+</tr>
+</tbody>
+</table>
+<p>Examining the distribution of the true and predicted cell type labels in the Baron dataset reveals that all three methods have most difficulty with annotating acinar and ductal cells: The methods tend to predict too many cells to be acinar and too little cells to be ductal.</p>
+</div>
+<div id="annotating-muraro-2016" class="section level2">
+<h2>Annotating Muraro (2016)</h2>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" data-line-number="1">table.M.true &lt;-<span class="st"> </span><span class="kw">as.data.frame</span>(<span class="kw">table</span>(singleR.true.muraro.labels))</a>
+<a class="sourceLine" id="cb6-2" data-line-number="2"><span class="kw">names</span>(table.M.true) &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;cell_type&quot;</span>, <span class="st">&quot;True Muraro&quot;</span>)</a>
+<a class="sourceLine" id="cb6-3" data-line-number="3">table.M.singleR &lt;-<span class="st"> </span><span class="kw">as.data.frame</span>(<span class="kw">table</span>(singleR.pred.muraro.labels))</a>
+<a class="sourceLine" id="cb6-4" data-line-number="4"><span class="kw">names</span>(table.M.singleR) &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;cell_type&quot;</span>, <span class="st">&quot;SingleR&quot;</span>)</a>
+<a class="sourceLine" id="cb6-5" data-line-number="5">table.M.sc &lt;-<span class="st"> </span><span class="kw">as.data.frame</span>(<span class="kw">table</span>(sc.pred.muraro.labels))</a>
+<a class="sourceLine" id="cb6-6" data-line-number="6"><span class="kw">names</span>(table.M.sc) &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;cell_type&quot;</span>, <span class="st">&quot;scClassify&quot;</span>)</a>
+<a class="sourceLine" id="cb6-7" data-line-number="7">table.M.seurat &lt;-<span class="st"> </span><span class="kw">as.data.frame</span>(<span class="kw">table</span>(seurat.pred.muraro.labels))</a>
+<a class="sourceLine" id="cb6-8" data-line-number="8"><span class="kw">names</span>(table.M.seurat) &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;cell_type&quot;</span>, <span class="st">&quot;Seurat&quot;</span>)</a>
+<a class="sourceLine" id="cb6-9" data-line-number="9">table.M &lt;-<span class="st"> </span><span class="kw">merge</span>(<span class="kw">merge</span>(<span class="kw">merge</span>(table.M.true, table.M.singleR, <span class="dt">by=</span><span class="st">&quot;cell_type&quot;</span>),</a>
+<a class="sourceLine" id="cb6-10" data-line-number="10">                       table.M.sc, <span class="dt">by=</span><span class="st">&quot;cell_type&quot;</span>), table.M.seurat, <span class="dt">by=</span><span class="st">&quot;cell_type&quot;</span>)</a>
+<a class="sourceLine" id="cb6-11" data-line-number="11">knitr<span class="op">::</span><span class="kw">kable</span>(table.M) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb6-12" data-line-number="12"><span class="st">  </span><span class="kw">kable_styling</span>()<span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb6-13" data-line-number="13"><span class="st">  </span><span class="kw">row_spec</span>(<span class="kw">c</span>(<span class="dv">1</span>,<span class="dv">5</span>),<span class="dt">bold=</span>T)</a></code></pre></div>
+<table class="table" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:left;">
+cell_type
+</th>
+<th style="text-align:right;">
+True Muraro
+</th>
+<th style="text-align:right;">
+SingleR
+</th>
+<th style="text-align:right;">
+scClassify
+</th>
+<th style="text-align:right;">
+Seurat
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;font-weight: bold;">
+acinar
+</td>
+<td style="text-align:right;font-weight: bold;">
+203
+</td>
+<td style="text-align:right;font-weight: bold;">
+173
+</td>
+<td style="text-align:right;font-weight: bold;">
+49
+</td>
+<td style="text-align:right;font-weight: bold;">
+49
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+alpha
+</td>
+<td style="text-align:right;">
+800
+</td>
+<td style="text-align:right;">
+781
+</td>
+<td style="text-align:right;">
+801
+</td>
+<td style="text-align:right;">
+778
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+beta
+</td>
+<td style="text-align:right;">
+441
+</td>
+<td style="text-align:right;">
+430
+</td>
+<td style="text-align:right;">
+432
+</td>
+<td style="text-align:right;">
+443
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+delta
+</td>
+<td style="text-align:right;">
+190
+</td>
+<td style="text-align:right;">
+201
+</td>
+<td style="text-align:right;">
+187
+</td>
+<td style="text-align:right;">
+187
+</td>
+</tr>
+<tr>
+<td style="text-align:left;font-weight: bold;">
+ductal
+</td>
+<td style="text-align:right;font-weight: bold;">
+237
+</td>
+<td style="text-align:right;font-weight: bold;">
+278
+</td>
+<td style="text-align:right;font-weight: bold;">
+396
+</td>
+<td style="text-align:right;font-weight: bold;">
+393
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+endothelial
+</td>
+<td style="text-align:right;">
+20
+</td>
+<td style="text-align:right;">
+20
+</td>
+<td style="text-align:right;">
+21
+</td>
+<td style="text-align:right;">
+37
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+epsilon
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+2
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+gamma
+</td>
+<td style="text-align:right;">
+99
+</td>
+<td style="text-align:right;">
+107
+</td>
+<td style="text-align:right;">
+104
+</td>
+<td style="text-align:right;">
+103
+</td>
+</tr>
+</tbody>
+</table>
+<p>Examining the distribution of the true and predicted cell type labels in the Muraro dataset again reveals that all three methods have difficulty with annotating acinar and ductal cells: The methods tend to predict too many cells to be ductal and too little cells to be acinar.</p>
+<p>It is reasonable that the methods have difficulty distinguishing acinar from ductal cells, as they are both part of the exocrine pancreas.</p>
+<p>What is also important to note is that the Baron dataset contains roughly four times the amount of annotated cells than the Muraro dataset, and that the abundances of cell types vary greatly within the datasets.</p>
+</div>
+</div>
+<div id="adjusted-rand-index" class="section level1">
+<h1>Adjusted Rand Index</h1>
+<p>The <a href="https://www.rdocumentation.org/packages/pdfCluster/versions/1.0-3/topics/adj.rand.index">adjusted Rand index</a> (ARI) reports the similarity between two classifications of the same objects, in this case the similarity between the “true” classification of the cell labels and the “predicted” classifications, made by the individual methods. An adjusted Rand index of 1 would be a perfect agreement between the two classifications.</p>
+<div id="annotating-baron-2016-1" class="section level2">
+<h2>Annotating Baron (2016)</h2>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" data-line-number="1">ari_B_singleR &lt;-<span class="st"> </span><span class="kw">adj.rand.index</span>(singleR.pred.baron.labels, singleR.true.baron.labels)</a>
+<a class="sourceLine" id="cb7-2" data-line-number="2">ari_B_scClassify &lt;-<span class="st"> </span><span class="kw">adj.rand.index</span>(sc.pred.baron.labels, sc.true.baron.labels)</a>
+<a class="sourceLine" id="cb7-3" data-line-number="3">ari_B_seurat &lt;-<span class="st"> </span><span class="kw">adj.rand.index</span>(seurat.pred.baron.labels, seurat.true.baron.labels)</a>
+<a class="sourceLine" id="cb7-4" data-line-number="4">classifiers &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;SingleR&quot;</span>, <span class="st">&quot;scClassify&quot;</span>, <span class="st">&quot;Seurat&quot;</span>)</a>
+<a class="sourceLine" id="cb7-5" data-line-number="5">ARI&lt;-<span class="st"> </span><span class="kw">c</span>(ari_B_singleR, ari_B_scClassify, ari_B_seurat)</a>
+<a class="sourceLine" id="cb7-6" data-line-number="6">ari.B &lt;-<span class="st"> </span><span class="kw">data.frame</span>(classifiers, ARI)</a>
+<a class="sourceLine" id="cb7-7" data-line-number="7">knitr<span class="op">::</span><span class="kw">kable</span>(ari.B) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb7-8" data-line-number="8"><span class="st">  </span><span class="kw">kable_styling</span>()</a></code></pre></div>
+<table class="table" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:left;">
+classifiers
+</th>
+<th style="text-align:right;">
+ARI
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+SingleR
+</td>
+<td style="text-align:right;">
+0.9451834
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+scClassify
+</td>
+<td style="text-align:right;">
+0.9227473
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Seurat
+</td>
+<td style="text-align:right;">
+0.9467411
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="annotating-muraro-2016-1" class="section level2">
+<h2>Annotating Muraro (2016)</h2>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" data-line-number="1">ari_M_singleR &lt;-<span class="st"> </span><span class="kw">adj.rand.index</span>(singleR.pred.muraro.labels, singleR.true.muraro.labels)</a>
+<a class="sourceLine" id="cb8-2" data-line-number="2">ari_M_scClassify &lt;-<span class="st"> </span><span class="kw">adj.rand.index</span>(sc.pred.muraro.labels, sc.true.muraro.labels)</a>
+<a class="sourceLine" id="cb8-3" data-line-number="3">ari_M_seurat &lt;-<span class="st"> </span><span class="kw">adj.rand.index</span>(seurat.pred.muraro.labels, seurat.true.muraro.labels)</a>
+<a class="sourceLine" id="cb8-4" data-line-number="4">classifiers &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;SingleR&quot;</span>, <span class="st">&quot;scClassify&quot;</span>, <span class="st">&quot;Seurat&quot;</span>)</a>
+<a class="sourceLine" id="cb8-5" data-line-number="5">ARI &lt;-<span class="st"> </span><span class="kw">c</span>(ari_M_singleR, ari_M_scClassify, ari_M_seurat)</a>
+<a class="sourceLine" id="cb8-6" data-line-number="6">ari.M &lt;-<span class="st"> </span><span class="kw">data.frame</span>(classifiers, ARI)</a>
+<a class="sourceLine" id="cb8-7" data-line-number="7">knitr<span class="op">::</span><span class="kw">kable</span>(ari.M) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb8-8" data-line-number="8"><span class="st">  </span><span class="kw">kable_styling</span>()</a></code></pre></div>
+<table class="table" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:left;">
+classifiers
+</th>
+<th style="text-align:right;">
+ARI
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+SingleR
+</td>
+<td style="text-align:right;">
+0.9145775
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+scClassify
+</td>
+<td style="text-align:right;">
+0.8922850
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Seurat
+</td>
+<td style="text-align:right;">
+0.8793100
+</td>
+</tr>
+</tbody>
+</table>
+<p>All methods achieved high adjusted Rand index scores (&gt;≈ 0.9) on the two datasets and thus performed well. <em>Seurat</em> and <em>SingleR</em> performed best on the Baron dataset, while <em>SingleR</em> performed best on the Muraro dataset.</p>
+</div>
+</div>
+<div id="f1-scores" class="section level1">
+<h1>F1 scores</h1>
+<p>The <a href="https://en.wikipedia.org/wiki/F-score#Formulation">F1 score</a> is defined as the harmonic mean of precision and recall: <span class="math display">\[F1=2*\frac{precision*recall}{precision+recall}\]</span> It is a good measure of accuracy of classification and robust in case of class imbalance. The F1 score was evaluated for the individual cell type labels.</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" data-line-number="1"><span class="co">#function that computes f1 score for specific cell type label</span></a>
+<a class="sourceLine" id="cb9-2" data-line-number="2">f1 &lt;-<span class="st"> </span><span class="cf">function</span>(label, predicted_labels, true_labels) {</a>
+<a class="sourceLine" id="cb9-3" data-line-number="3">  <span class="co">#binarize prediction vectors for mutual class labels</span></a>
+<a class="sourceLine" id="cb9-4" data-line-number="4">  pred &lt;-<span class="st"> </span>predicted_labels<span class="op">==</span>label</a>
+<a class="sourceLine" id="cb9-5" data-line-number="5">  true &lt;-<span class="st"> </span>true_labels<span class="op">==</span>label</a>
+<a class="sourceLine" id="cb9-6" data-line-number="6">  <span class="co">#compute f1 score</span></a>
+<a class="sourceLine" id="cb9-7" data-line-number="7">  f1_pred &lt;-<span class="st"> </span><span class="kw">prediction</span>(<span class="kw">as.numeric</span>(pred), <span class="kw">as.numeric</span>(true))</a>
+<a class="sourceLine" id="cb9-8" data-line-number="8">  f1_score &lt;-<span class="st"> </span><span class="kw">performance</span>(f1_pred, <span class="dt">measure=</span><span class="st">&quot;f&quot;</span>)<span class="op">@</span>y.values[[<span class="dv">1</span>]][<span class="dv">2</span>]</a>
+<a class="sourceLine" id="cb9-9" data-line-number="9">  <span class="kw">return</span>(f1_score)</a>
+<a class="sourceLine" id="cb9-10" data-line-number="10">}</a>
+<a class="sourceLine" id="cb9-11" data-line-number="11"></a>
+<a class="sourceLine" id="cb9-12" data-line-number="12">labels &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;alpha&quot;</span>, <span class="st">&quot;acinar&quot;</span>, <span class="st">&quot;beta&quot;</span>, <span class="st">&quot;delta&quot;</span>, <span class="st">&quot;ductal&quot;</span>, <span class="st">&quot;endothelial&quot;</span>, <span class="st">&quot;epsilon&quot;</span>, <span class="st">&quot;gamma&quot;</span>) </a>
+<a class="sourceLine" id="cb9-13" data-line-number="13"><span class="co">#initialize f1 score vectors</span></a>
+<a class="sourceLine" id="cb9-14" data-line-number="14">f1_B_singleR &lt;-<span class="st"> </span><span class="kw">c</span>()</a>
+<a class="sourceLine" id="cb9-15" data-line-number="15">f1_B_scClassify &lt;-<span class="st"> </span><span class="kw">c</span>()</a>
+<a class="sourceLine" id="cb9-16" data-line-number="16">f1_B_seurat &lt;-<span class="st"> </span><span class="kw">c</span>()</a>
+<a class="sourceLine" id="cb9-17" data-line-number="17">f1_M_singleR &lt;-<span class="st"> </span><span class="kw">c</span>()</a>
+<a class="sourceLine" id="cb9-18" data-line-number="18">f1_M_scClassify &lt;-<span class="st"> </span><span class="kw">c</span>()</a>
+<a class="sourceLine" id="cb9-19" data-line-number="19">f1_M_seurat &lt;-<span class="st"> </span><span class="kw">c</span>()</a></code></pre></div>
+<div id="annotating-baron-2016-2" class="section level2">
+<h2>Annotating Baron (2016)</h2>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" data-line-number="1"><span class="cf">for</span> (label <span class="cf">in</span> labels) {</a>
+<a class="sourceLine" id="cb10-2" data-line-number="2">  score_singleR &lt;-<span class="st"> </span><span class="kw">f1</span>(<span class="dt">label=</span>label, <span class="dt">predicted_labels =</span> singleR.pred.baron.labels, </a>
+<a class="sourceLine" id="cb10-3" data-line-number="3">                      <span class="dt">true_labels =</span> singleR.true.baron.labels)</a>
+<a class="sourceLine" id="cb10-4" data-line-number="4">  f1_B_singleR &lt;-<span class="st"> </span><span class="kw">c</span>(f1_B_singleR, score_singleR)</a>
+<a class="sourceLine" id="cb10-5" data-line-number="5">  score_sc &lt;-<span class="st"> </span><span class="kw">f1</span>(<span class="dt">label=</span>label, <span class="dt">predicted_labels =</span> sc.pred.baron.labels, </a>
+<a class="sourceLine" id="cb10-6" data-line-number="6">                 <span class="dt">true_labels =</span> sc.true.baron.labels)</a>
+<a class="sourceLine" id="cb10-7" data-line-number="7">  f1_B_scClassify &lt;-<span class="st"> </span><span class="kw">c</span>(f1_B_scClassify, score_sc)</a>
+<a class="sourceLine" id="cb10-8" data-line-number="8">  score_seurat &lt;-<span class="st"> </span><span class="kw">f1</span>(<span class="dt">label=</span>label, <span class="dt">predicted_labels =</span> seurat.pred.baron.labels, </a>
+<a class="sourceLine" id="cb10-9" data-line-number="9">                     <span class="dt">true_labels =</span> seurat.true.baron.labels)</a>
+<a class="sourceLine" id="cb10-10" data-line-number="10">  f1_B_seurat &lt;-<span class="st"> </span><span class="kw">c</span>(f1_B_seurat, score_seurat)</a>
+<a class="sourceLine" id="cb10-11" data-line-number="11">}</a>
+<a class="sourceLine" id="cb10-12" data-line-number="12"></a>
+<a class="sourceLine" id="cb10-13" data-line-number="13">f1_B_table &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">cell_type =</span> labels, <span class="dt">SingleR =</span> f1_B_singleR, </a>
+<a class="sourceLine" id="cb10-14" data-line-number="14">                         <span class="dt">scClassify =</span> f1_B_scClassify, <span class="dt">Seurat =</span> f1_B_seurat)</a>
+<a class="sourceLine" id="cb10-15" data-line-number="15"><span class="kw">formattable</span>(f1_B_table, <span class="kw">list</span>(<span class="kw">area</span>(<span class="dt">col=</span>SingleR<span class="op">:</span>Seurat) <span class="op">~</span><span class="kw">color_tile</span>(<span class="st">&quot;white&quot;</span>, <span class="st">&quot;darkseagreen3&quot;</span>)))</a></code></pre></div>
+<table class="table table-condensed">
+<thead>
+<tr>
+<th style="text-align:right;">
+cell_type
+</th>
+<th style="text-align:right;">
+SingleR
+</th>
+<th style="text-align:right;">
+scClassify
+</th>
+<th style="text-align:right;">
+Seurat
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:right;">
+alpha
+</td>
+<td style="text-align:right;">
+<span style="display: block; padding: 0 4px; border-radius: 4px; background-color: #9bcd9b">0.9928058</span>
+</td>
+<td style="text-align:right;">
+<span style="display: block; padding: 0 4px; border-radius: 4px; background-color: #9ccd9c">0.9902067</span>
+</td>
+<td style="text-align:right;">
+<span style="display: block; padding: 0 4px; border-radius: 4px; background-color: #9bcd9b">0.9941087</span>
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+acinar
+</td>
+<td style="text-align:right;">
+<span style="display: block; padding: 0 4px; border-radius: 4px; background-color: #c0dfc0">0.9037783</span>
+</td>
+<td style="text-align:right;">
+<span style="display: block; padding: 0 4px; border-radius: 4px; background-color: #c0dfc0">0.9033233</span>
+</td>
+<td style="text-align:right;">
+<span style="display: block; padding: 0 4px; border-radius: 4px; background-color: #bedebe">0.9076142</span>
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+beta
+</td>
+<td style="text-align:right;">
+<span style="display: block; padding: 0 4px; border-radius: 4px; background-color: #9dce9d">0.9883507</span>
+</td>
+<td style="text-align:right;">
+<span style="display: block; padding: 0 4px; border-radius: 4px; background-color: #a2d0a2">0.9751702</span>
+</td>
+<td style="text-align:right;">
+<span style="display: block; padding: 0 4px; border-radius: 4px; background-color: #9dce9d">0.9883839</span>
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+delta
+</td>
+<td style="text-align:right;">
+<span style="display: block; padding: 0 4px; border-radius: 4px; background-color: #a5d2a5">0.9681398</span>
+</td>
+<td style="text-align:right;">
+<span style="display: block; padding: 0 4px; border-radius: 4px; background-color: #badcba">0.9171271</span>
+</td>
+<td style="text-align:right;">
+<span style="display: block; padding: 0 4px; border-radius: 4px; background-color: #a4d1a4">0.9702564</span>
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+ductal
+</td>
+<td style="text-align:right;">
+<span style="display: block; padding: 0 4px; border-radius: 4px; background-color: #c0dfc0">0.9033264</span>
+</td>
+<td style="text-align:right;">
+<span style="display: block; padding: 0 4px; border-radius: 4px; background-color: #c8e3c8">0.8841883</span>
+</td>
+<td style="text-align:right;">
+<span style="display: block; padding: 0 4px; border-radius: 4px; background-color: #c1e0c1">0.8998443</span>
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+endothelial
+</td>
+<td style="text-align:right;">
+<span style="display: block; padding: 0 4px; border-radius: 4px; background-color: #9dce9d">0.9878543</span>
+</td>
+<td style="text-align:right;">
+<span style="display: block; padding: 0 4px; border-radius: 4px; background-color: #a5d2a5">0.9690722</span>
+</td>
+<td style="text-align:right;">
+<span style="display: block; padding: 0 4px; border-radius: 4px; background-color: #a0cfa0">0.9795918</span>
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+epsilon
+</td>
+<td style="text-align:right;">
+<span style="display: block; padding: 0 4px; border-radius: 4px; background-color: #ffffff">0.7500000</span>
+</td>
+<td style="text-align:right;">
+<span style="display: block; padding: 0 4px; border-radius: 4px; background-color: #e0efe0">0.8235294</span>
+</td>
+<td style="text-align:right;">
+<span style="display: block; padding: 0 4px; border-radius: 4px; background-color: #eaf4ea">0.8000000</span>
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+gamma
+</td>
+<td style="text-align:right;">
+<span style="display: block; padding: 0 4px; border-radius: 4px; background-color: #a3d1a3">0.9728507</span>
+</td>
+<td style="text-align:right;">
+<span style="display: block; padding: 0 4px; border-radius: 4px; background-color: #a8d3a8">0.9614512</span>
+</td>
+<td style="text-align:right;">
+<span style="display: block; padding: 0 4px; border-radius: 4px; background-color: #a0cfa0">0.9798658</span>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb11-1" data-line-number="1">p_B &lt;-<span class="st"> </span>f1_B_table <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb11-2" data-line-number="2"><span class="st">  </span><span class="kw">gather</span>(<span class="st">&quot;Classifier&quot;</span>, <span class="st">&quot;F1_score&quot;</span>,<span class="op">-</span>cell_type) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb11-3" data-line-number="3"><span class="st">  </span><span class="kw">ggplot</span>(<span class="kw">aes</span>(cell_type, F1_score, <span class="dt">fill =</span> Classifier)) <span class="op">+</span></a>
+<a class="sourceLine" id="cb11-4" data-line-number="4"><span class="st">  </span><span class="kw">geom_bar</span>(<span class="dt">position =</span> <span class="st">&quot;dodge&quot;</span>, <span class="dt">stat =</span> <span class="st">&quot;identity&quot;</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb11-5" data-line-number="5"><span class="st">  </span><span class="kw">theme_bw</span>()</a>
+<a class="sourceLine" id="cb11-6" data-line-number="6">p_B <span class="op">+</span><span class="st"> </span><span class="kw">scale_fill_grey</span>() <span class="op">+</span><span class="st"> </span><span class="kw">ggtitle</span>(<span class="st">&quot;Baron Dataset: Plot of F1 scores for the individual cell types&quot;</span>)</a></code></pre></div>
+<p><img src="figure/evaluation.Rmd/barplot%20baron-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-barplot-baron-1">
+Past versions of “barplot baron-1.png”
+</button>
+</p>
+<div id="fig-no-spaces-barplot-baron-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/sta426hs2020/project-cell-type-annotation/blob/35eff5944ba04c572e1148673a0024480a651135/docs/figure/evaluation.Rmd/barplot baron-1.png" target="_blank">35eff59</a>
+</td>
+<td>
+speckerf
+</td>
+<td>
+2021-01-07
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/sta426hs2020/project-cell-type-annotation/blob/a380f2211bb87921b15964196267cc0a04acad01/docs/figure/evaluation.Rmd/barplot baron-1.png" target="_blank">a380f22</a>
+</td>
+<td>
+stinea98
+</td>
+<td>
+2021-01-06
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/sta426hs2020/project-cell-type-annotation/blob/4fd02cc8a540c6fc0fd6a364bf1caad2e92468e3/docs/figure/evaluation.Rmd/barplot baron-1.png" target="_blank">4fd02cc</a>
+</td>
+<td>
+stinea98
+</td>
+<td>
+2021-01-05
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/sta426hs2020/project-cell-type-annotation/blob/9f68593b37ea32e30e526e862911d53e8e62fdfa/docs/figure/evaluation.Rmd/barplot baron-1.png" target="_blank">9f68593</a>
+</td>
+<td>
+stinea98
+</td>
+<td>
+2021-01-03
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/sta426hs2020/project-cell-type-annotation/blob/f51946750a14f00bc75db37fc8499aaa5ee5ed87/docs/figure/evaluation.Rmd/barplot baron-1.png" target="_blank">f519467</a>
+</td>
+<td>
+stinea98
+</td>
+<td>
+2021-01-03
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/sta426hs2020/project-cell-type-annotation/blob/05f7cba57edeff67211129c15c0fbe3991417292/docs/figure/evaluation.Rmd/barplot baron-1.png" target="_blank">05f7cba</a>
+</td>
+<td>
+stinea98
+</td>
+<td>
+2021-01-03
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/sta426hs2020/project-cell-type-annotation/blob/7925c3a629ee2be84cb5ba4d9b3c8a462227c99c/docs/figure/evaluation.Rmd/barplot baron-1.png" target="_blank">7925c3a</a>
+</td>
+<td>
+stinea98
+</td>
+<td>
+2021-01-02
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/sta426hs2020/project-cell-type-annotation/blob/d3bb0c2e871175fe2c5829148f8179373d964b50/docs/figure/evaluation.Rmd/barplot baron-1.png" target="_blank">d3bb0c2</a>
+</td>
+<td>
+stinea98
+</td>
+<td>
+2021-01-02
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>As we can see from the table and the barplot, for the Baron dataset the F1 scores for the individual cell types tend to be high for all three methods and all cell types. Acinar, ductal and especially epsilon cell types tend to have slightly lower F1 scores. However, as there are only a couple of epsilon cells in both datasets (2 in Muraro, 9 in Baron), the F1 scores for this cell type label should not be taken into consideration too much. It is still remarkable that all three methods still were able to detect some cells of this very rare cell type.</p>
+<p>Looking at the Baron dataset, none of the methods outperformed the others - all of them performed very well.</p>
+</div>
+<div id="annotating-muraro-2016-2" class="section level2">
+<h2>Annotating Muraro (2016)</h2>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb12-1" data-line-number="1"><span class="cf">for</span> (label <span class="cf">in</span> labels) {</a>
+<a class="sourceLine" id="cb12-2" data-line-number="2">  score_singleR &lt;-<span class="st"> </span><span class="kw">f1</span>(<span class="dt">label=</span>label, <span class="dt">predicted_labels =</span> singleR.pred.muraro.labels, </a>
+<a class="sourceLine" id="cb12-3" data-line-number="3">                      <span class="dt">true_labels =</span> singleR.true.muraro.labels)</a>
+<a class="sourceLine" id="cb12-4" data-line-number="4">  f1_M_singleR &lt;-<span class="st"> </span><span class="kw">c</span>(f1_M_singleR, score_singleR)</a>
+<a class="sourceLine" id="cb12-5" data-line-number="5">  score_sc &lt;-<span class="st"> </span><span class="kw">f1</span>(<span class="dt">label=</span>label, <span class="dt">predicted_labels =</span> sc.pred.muraro.labels, </a>
+<a class="sourceLine" id="cb12-6" data-line-number="6">                 <span class="dt">true_labels =</span> sc.true.muraro.labels)</a>
+<a class="sourceLine" id="cb12-7" data-line-number="7">  f1_M_scClassify &lt;-<span class="st"> </span><span class="kw">c</span>(f1_M_scClassify, score_sc)</a>
+<a class="sourceLine" id="cb12-8" data-line-number="8">  score_seurat &lt;-<span class="st"> </span><span class="kw">f1</span>(<span class="dt">label=</span>label, <span class="dt">predicted_labels =</span> seurat.pred.muraro.labels, </a>
+<a class="sourceLine" id="cb12-9" data-line-number="9">                     <span class="dt">true_labels =</span> seurat.true.muraro.labels)</a>
+<a class="sourceLine" id="cb12-10" data-line-number="10">  f1_M_seurat &lt;-<span class="st"> </span><span class="kw">c</span>(f1_M_seurat, score_seurat)</a>
+<a class="sourceLine" id="cb12-11" data-line-number="11">}</a>
+<a class="sourceLine" id="cb12-12" data-line-number="12"></a>
+<a class="sourceLine" id="cb12-13" data-line-number="13">f1_M_table &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">cell_type =</span> labels, <span class="dt">SingleR =</span> f1_M_singleR, </a>
+<a class="sourceLine" id="cb12-14" data-line-number="14">                         <span class="dt">scClassify =</span> f1_M_scClassify, <span class="dt">Seurat =</span> f1_M_seurat)</a>
+<a class="sourceLine" id="cb12-15" data-line-number="15"></a>
+<a class="sourceLine" id="cb12-16" data-line-number="16"><span class="kw">formattable</span>(f1_M_table, <span class="kw">list</span>(<span class="kw">area</span>(<span class="dt">col=</span>SingleR<span class="op">:</span>Seurat) <span class="op">~</span><span class="kw">color_tile</span>(<span class="st">&quot;transparent&quot;</span>, <span class="st">&quot;darkseagreen3&quot;</span>)))</a></code></pre></div>
+<table class="table table-condensed">
+<thead>
+<tr>
+<th style="text-align:right;">
+cell_type
+</th>
+<th style="text-align:right;">
+SingleR
+</th>
+<th style="text-align:right;">
+scClassify
+</th>
+<th style="text-align:right;">
+Seurat
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:right;">
+alpha
+</td>
+<td style="text-align:right;">
+<span style="display: block; padding: 0 4px; border-radius: 4px; background-color: #9dce9d">0.9829222</span>
+</td>
+<td style="text-align:right;">
+<span style="display: block; padding: 0 4px; border-radius: 4px; background-color: #9ccd9c">0.9868832</span>
+</td>
+<td style="text-align:right;">
+<span style="display: block; padding: 0 4px; border-radius: 4px; background-color: #9dce9d">0.9835234</span>
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+acinar
+</td>
+<td style="text-align:right;">
+<span style="display: block; padding: 0 4px; border-radius: 4px; background-color: #aad4aa">0.8936170</span>
+</td>
+<td style="text-align:right;">
+<span style="display: block; padding: 0 4px; border-radius: 4px; background-color: #f8fbf8">0.3650794</span>
+</td>
+<td style="text-align:right;">
+<span style="display: block; padding: 0 4px; border-radius: 4px; background-color: #ffffff">0.3174603</span>
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+beta
+</td>
+<td style="text-align:right;">
+<span style="display: block; padding: 0 4px; border-radius: 4px; background-color: #a1d0a1">0.9529277</span>
+</td>
+<td style="text-align:right;">
+<span style="display: block; padding: 0 4px; border-radius: 4px; background-color: #9fcf9f">0.9690722</span>
+</td>
+<td style="text-align:right;">
+<span style="display: block; padding: 0 4px; border-radius: 4px; background-color: #a0cfa0">0.9592760</span>
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+delta
+</td>
+<td style="text-align:right;">
+<span style="display: block; padding: 0 4px; border-radius: 4px; background-color: #a1d0a1">0.9565217</span>
+</td>
+<td style="text-align:right;">
+<span style="display: block; padding: 0 4px; border-radius: 4px; background-color: #9ccd9c">0.9920424</span>
+</td>
+<td style="text-align:right;">
+<span style="display: block; padding: 0 4px; border-radius: 4px; background-color: #9dce9d">0.9814324</span>
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+ductal
+</td>
+<td style="text-align:right;">
+<span style="display: block; padding: 0 4px; border-radius: 4px; background-color: #aad4aa">0.8970874</span>
+</td>
+<td style="text-align:right;">
+<span style="display: block; padding: 0 4px; border-radius: 4px; background-color: #c5e2c5">0.7109005</span>
+</td>
+<td style="text-align:right;">
+<span style="display: block; padding: 0 4px; border-radius: 4px; background-color: #c7e3c7">0.6952381</span>
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+endothelial
+</td>
+<td style="text-align:right;">
+<span style="display: block; padding: 0 4px; border-radius: 4px; background-color: #9bcd9b">1.0000000</span>
+</td>
+<td style="text-align:right;">
+<span style="display: block; padding: 0 4px; border-radius: 4px; background-color: #9ece9e">0.9756098</span>
+</td>
+<td style="text-align:right;">
+<span style="display: block; padding: 0 4px; border-radius: 4px; background-color: #c6e2c6">0.7017544</span>
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+epsilon
+</td>
+<td style="text-align:right;">
+<span style="display: block; padding: 0 4px; border-radius: 4px; background-color: #9bcd9b">1.0000000</span>
+</td>
+<td style="text-align:right;">
+<span style="display: block; padding: 0 4px; border-radius: 4px; background-color: #9bcd9b">1.0000000</span>
+</td>
+<td style="text-align:right;">
+<span style="display: block; padding: 0 4px; border-radius: 4px; background-color: #e4f1e4">0.5000000</span>
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+gamma
+</td>
+<td style="text-align:right;">
+<span style="display: block; padding: 0 4px; border-radius: 4px; background-color: #a3d1a3">0.9417476</span>
+</td>
+<td style="text-align:right;">
+<span style="display: block; padding: 0 4px; border-radius: 4px; background-color: #a1d0a1">0.9556650</span>
+</td>
+<td style="text-align:right;">
+<span style="display: block; padding: 0 4px; border-radius: 4px; background-color: #a2d0a2">0.9504950</span>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb13-1" data-line-number="1">p_M &lt;-<span class="st"> </span>f1_M_table <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb13-2" data-line-number="2"><span class="st">  </span><span class="kw">gather</span>(<span class="st">&quot;Classifier&quot;</span>, <span class="st">&quot;F1_score&quot;</span>,<span class="op">-</span>cell_type) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb13-3" data-line-number="3"><span class="st">  </span><span class="kw">ggplot</span>(<span class="kw">aes</span>(cell_type, F1_score, <span class="dt">fill =</span> Classifier)) <span class="op">+</span></a>
+<a class="sourceLine" id="cb13-4" data-line-number="4"><span class="st">  </span><span class="kw">geom_bar</span>(<span class="dt">position =</span> <span class="st">&quot;dodge&quot;</span>, <span class="dt">stat =</span> <span class="st">&quot;identity&quot;</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb13-5" data-line-number="5"><span class="st">  </span><span class="kw">theme_bw</span>()</a>
+<a class="sourceLine" id="cb13-6" data-line-number="6">p_M <span class="op">+</span><span class="st"> </span><span class="kw">scale_fill_grey</span>() <span class="op">+</span><span class="st"> </span><span class="kw">ggtitle</span>(<span class="st">&quot;Muraro Dataset: Plot of F1 scores for the individual cell types&quot;</span>)</a></code></pre></div>
+<p><img src="figure/evaluation.Rmd/barplot%20muraro-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-barplot-muraro-1">
+Past versions of “barplot muraro-1.png”
+</button>
+</p>
+<div id="fig-no-spaces-barplot-muraro-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/sta426hs2020/project-cell-type-annotation/blob/35eff5944ba04c572e1148673a0024480a651135/docs/figure/evaluation.Rmd/barplot muraro-1.png" target="_blank">35eff59</a>
+</td>
+<td>
+speckerf
+</td>
+<td>
+2021-01-07
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/sta426hs2020/project-cell-type-annotation/blob/a380f2211bb87921b15964196267cc0a04acad01/docs/figure/evaluation.Rmd/barplot muraro-1.png" target="_blank">a380f22</a>
+</td>
+<td>
+stinea98
+</td>
+<td>
+2021-01-06
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/sta426hs2020/project-cell-type-annotation/blob/4fd02cc8a540c6fc0fd6a364bf1caad2e92468e3/docs/figure/evaluation.Rmd/barplot muraro-1.png" target="_blank">4fd02cc</a>
+</td>
+<td>
+stinea98
+</td>
+<td>
+2021-01-05
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/sta426hs2020/project-cell-type-annotation/blob/9f68593b37ea32e30e526e862911d53e8e62fdfa/docs/figure/evaluation.Rmd/barplot muraro-1.png" target="_blank">9f68593</a>
+</td>
+<td>
+stinea98
+</td>
+<td>
+2021-01-03
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/sta426hs2020/project-cell-type-annotation/blob/f51946750a14f00bc75db37fc8499aaa5ee5ed87/docs/figure/evaluation.Rmd/barplot muraro-1.png" target="_blank">f519467</a>
+</td>
+<td>
+stinea98
+</td>
+<td>
+2021-01-03
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/sta426hs2020/project-cell-type-annotation/blob/05f7cba57edeff67211129c15c0fbe3991417292/docs/figure/evaluation.Rmd/barplot muraro-1.png" target="_blank">05f7cba</a>
+</td>
+<td>
+stinea98
+</td>
+<td>
+2021-01-03
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/sta426hs2020/project-cell-type-annotation/blob/7925c3a629ee2be84cb5ba4d9b3c8a462227c99c/docs/figure/evaluation.Rmd/barplot muraro-1.png" target="_blank">7925c3a</a>
+</td>
+<td>
+stinea98
+</td>
+<td>
+2021-01-02
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/sta426hs2020/project-cell-type-annotation/blob/d3bb0c2e871175fe2c5829148f8179373d964b50/docs/figure/evaluation.Rmd/barplot muraro-1.png" target="_blank">d3bb0c2</a>
+</td>
+<td>
+stinea98
+</td>
+<td>
+2021-01-02
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>As we can see from the table and the barplot, for the Muraro dataset the F1 scores for the individual cell types are more variable across the methods. <em>SingleR</em> seems to perform better in distinguishing acinar from ductal cells than <em>scClassify</em> and <em>Seurat</em>, which perform poorly for these two cell types. Also, <em>Seurat</em> performs worse in identifying endothelial cells than the other two methods, but this cell type is also very rare in the Muraro dataset.</p>
+<p>Looking at the Muraro dataset, <em>SingleR</em> outperformed the other two methods.</p>
+</div>
+</div>
+<div id="conclusion" class="section level1">
+<h1>Conclusion</h1>
+<p>It is important to note that due to the limited scope of this project, the analyses we were able to perform are very simple and limited, and thus it is difficult to make any concluding statements on the performance of these three methods.</p>
+<p><strong>General conclusions for automated cell type annotation methods</strong>:</p>
+<p>What can be said about automated cell type annotation methods in general, is the following:</p>
+<p>First of all, the performance is highly dependent on the combination of test and reference datasets. This was not only observed in our analyses of the Baron and Muraro dataset (where all three methods performed a lot better predicting labels for the Baron dataset with the Muraro dataset as reference than vice-versa), but also by <span class="citation">Lin et al. (2019)</span> in their paper on <em>scClassify</em>, where they evaluated the performance of 16 methods on 30 training and test dataset pairs and found that the performance was strongly dependent on the combination of datasets.</p>
+<p>Secondly, automated cell type annotation methods strongly depend on the quality of the (annotation of the) reference datasets. Yet, the approach of combining multiple reference datasets instead of training the models on just a single reference datasets, might alleviate the issue of high dependency on the quality of the reference dataset. Also, one would like to have reference datasets of a reasonable size. Yet it was interesting that we found higher performance of the methods when using the smaller dataset as reference (Muraro), while we would have expected the opposite.</p>
+<p>Lastly, preprocessing the cell type labels can be a hassle. The methods require the reference dataset to contain a superset of labels that are expected to be present in the test dataset. And while harmonizing all cell type labels for pancreas scRNA-seq data might be fairly straight-forward, it can take quite some time for PBMC data.</p>
+<p>So, all in all, we got the impression that the performance of automated cell type annotation methods is highly situation-dependent.</p>
+<p><strong>Conclusions for each method individually</strong>:</p>
+<p><strong>SingleR</strong>: <em>SingleR</em> is a robust nearest-neighbor classifier, which is easy to use and well documented. The underlying theory is simpler compared to the other two methods, making the usage more straigth-forward, but also less customizable. In our analysis, the classifications of <em>SingleR</em> were solid for all cell types in both datasets. Especially, the method seemed to perform better in situations of low cell type abundances compared to the other two methods.</p>
+<p><strong>scClassify</strong>: <em>scClassify</em> is a high-level classifier, which is taking the similarities between different groups of cell types into consideration by building a cell type tree. Although the underlying theory is more complex, the method is very well documented. The cell type annotations by <em>scClassify</em> were solid for most cell types, yet the method seemed to have problems with low cell type abundances. Further, the default settings only involve one parameter combination of gene selection method and similarity metric and the full potential of <em>scClassify</em> was not tested out. It would be interesting to see, whether the ensemble learning option, which combines mutliple parameter combinations and weights them by their training error, would significantly increase the performance.</p>
+<p><strong>Seurat</strong>: <em>Seurat</em> is an environment that is, besides other applications in single-cell analysis, able of annotating cell types. Their “anchoring” methodology seems to be promising in combining multiple datasets across different technologies and even different modalities. The <em>Seurat</em> environment is well-documented and appears to be very consistent and coordinated, but as they introduced new data structures, difficulties with integrating existing tools by Bioconductor could appear. In our analysis, the predictions by <em>Seurat</em> were solid, however also struggling with the case of low cell type abundances.</p>
+<p>In our analysis, we have investigated the theory and the performance of three different cell type annotation methods. Although they are all based on different statistical methods, the performance was similar in most cases and the differences only subtle. We therefore can’t conclude what method outperformed the others. In order to do so, further combinations of reference and test data, datasets from other tissues and the full potential of every method would need to be explored.</p>
+</div>
+<div id="references" class="section level1">
+<h1>References</h1>
+<div id="refs">
+<div id="ref-lin2019scclassify">
+<p>Lin, Yingxin, Yao Cao, Hani J Kim, Agus Salim, Terence P Speed, Dave Lin, Pengyi Yang, and Jean Yee Hwa Yang. 2019. “ScClassify: Hierarchical Classification of Cells.” <em>bioRxiv</em>. Cold Spring Harbor Laboratory, 776948.</p>
+</div>
+</div>
+<br>
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
+<span class="glyphicon glyphicon-wrench" aria-hidden="true"></span> Session information
+</button>
+</p>
+<div id="workflowr-sessioninfo" class="collapse">
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb14-1" data-line-number="1"><span class="kw">sessionInfo</span>()</a></code></pre></div>
+<pre><code>R version 4.0.3 (2020-10-10)
+Platform: x86_64-apple-darwin17.0 (64-bit)
+Running under: macOS Big Sur 10.16
+
+Matrix products: default
+BLAS:   /Library/Frameworks/R.framework/Versions/4.0/Resources/lib/libRblas.dylib
+LAPACK: /Library/Frameworks/R.framework/Versions/4.0/Resources/lib/libRlapack.dylib
+
+locale:
+[1] de_CH.UTF-8/de_CH.UTF-8/de_CH.UTF-8/C/de_CH.UTF-8/de_CH.UTF-8
+
+attached base packages:
+[1] stats     graphics  grDevices utils     datasets  methods   base     
+
+other attached packages:
+[1] knitr_1.30          kableExtra_1.3.1    formattable_0.2.0.1
+[4] ROCR_1.0-11         tidyr_1.1.2         ggplot2_3.3.2      
+[7] pdfCluster_1.0-3    workflowr_1.6.2    
+
+loaded via a namespace (and not attached):
+ [1] tidyselect_1.1.0  xfun_0.19         purrr_0.3.4       colorspace_2.0-0 
+ [5] vctrs_0.3.6       generics_0.1.0    geometry_0.4.5    htmltools_0.5.0  
+ [9] viridisLite_0.3.0 yaml_2.2.1        rlang_0.4.9       later_1.1.0.1    
+[13] pillar_1.4.7      glue_1.4.2        withr_2.3.0       lifecycle_0.2.0  
+[17] stringr_1.4.0     munsell_0.5.0     gtable_0.3.0      rvest_0.3.6      
+[21] htmlwidgets_1.5.3 evaluate_0.14     labeling_0.4.2    magic_1.5-9      
+[25] httpuv_1.5.4      highr_0.8         Rcpp_1.0.5        promises_1.1.1   
+[29] scales_1.1.1      webshot_0.5.2     abind_1.4-5       farver_2.0.3     
+[33] fs_1.5.0          digest_0.6.27     stringi_1.5.3     dplyr_1.0.2      
+[37] grid_4.0.3        rprojroot_2.0.2   tools_4.0.3       magrittr_2.0.1   
+[41] tibble_3.0.4      crayon_1.3.4      whisker_0.4       pkgconfig_2.0.3  
+[45] ellipsis_0.3.1    xml2_1.3.2        rmarkdown_2.5     httr_1.4.2       
+[49] rstudioapi_0.13   R6_2.5.0          git2r_0.27.1      compiler_4.0.3   </code></pre>
+</div>
+</div>
+
+
+<!-- Adjust MathJax settings so that all math formulae are shown using
+TeX fonts only; see
+http://docs.mathjax.org/en/latest/configuration.html.  This will make
+the presentation more consistent at the cost of the webpage sometimes
+taking slightly longer to load. Note that this only works because the
+footer is added to webpages before the MathJax javascript. -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    "HTML-CSS": { availableFonts: ["TeX"] }
+  });
+</script>
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+<script>
+$(document).ready(function () {
+  window.initializeCodeFolding("show" === "show");
+});
+</script>
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

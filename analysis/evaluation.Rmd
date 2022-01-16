@@ -1,0 +1,250 @@
+---
+title: "Evaluation"
+site: workflowr::wflow_site
+output:
+  workflowr::wflow_html:
+    toc: true
+    code_folding: show
+editor_options:
+  chunk_output_type: console
+bibliography: ../ref.bibtex
+---
+```{r load libraries}
+suppressMessages(library(pdfCluster))
+suppressMessages(library(ggplot2))
+suppressMessages(library(tidyr))
+suppressMessages(library(ROCR))
+suppressMessages(library(formattable))
+suppressMessages(library(kableExtra))
+suppressMessages(library(knitr))
+```
+
+The performance of the three classifiers will be evaluated by the Adjusted Rand Index and F1 scores for the individual class labels. 
+
+# Loading the data
+```{r Single R relevant data}
+singleR.pred.baron.labels <- readRDS(file="data/singleR.pred.baron.labels.rds")
+singleR.true.baron.labels <- readRDS(file="data/singleR.true.baron.labels.rds")
+singleR.pred.muraro.labels <- readRDS(file="data/singleR.pred.muraro.labels.rds")
+singleR.true.muraro.labels <- readRDS(file="data/singleR.true.muraro.labels.rds")
+```
+
+```{r scClassify relevant data}
+sc.pred.baron.labels <- readRDS(file="data/scClassify.pred.baron.labels.rds")
+sc.true.baron.labels <- readRDS(file="data/scClassify.true.baron.labels.rds")
+sc.pred.muraro.labels <- readRDS(file="data/scClassify.pred.muraro.labels.rds")
+sc.true.muraro.labels <- readRDS(file="data/scClassify.true.muraro.labels.rds")
+```
+
+```{r Seurat relevant data}
+seurat.pred.baron.labels <- readRDS(file="data/Seurat.pred.baron.labels.rds")
+seurat.true.baron.labels <- readRDS(file="data/Seurat.true.baron.labels.rds")
+seurat.pred.muraro.labels <- readRDS(file="data/Seurat.pred.muraro.labels.rds")
+seurat.true.muraro.labels <- readRDS(file="data/Seurat.true.muraro.labels.rds")
+```
+
+
+# Distribution of Labels
+
+## Annotating Baron (2016)
+
+```{r table baron}
+table.B.true <- as.data.frame(table(singleR.true.baron.labels))
+names(table.B.true) <- c("cell_type", "True Baron")
+table.B.singleR <- as.data.frame(table(singleR.pred.baron.labels))
+names(table.B.singleR) <- c("cell_type", "SingleR")
+table.B.sc <- as.data.frame(table(sc.pred.baron.labels))
+names(table.B.sc) <- c("cell_type", "scClassify")
+table.B.seurat <- as.data.frame(table(seurat.pred.baron.labels))
+names(table.B.seurat) <- c("cell_type", "Seurat")
+table.B <- merge(merge(merge(table.B.true, table.B.singleR, by="cell_type"),
+                       table.B.sc, by="cell_type"), table.B.seurat, by="cell_type")
+knitr::kable(table.B) %>%
+  kable_styling()%>%
+  row_spec(c(1,5),bold=T)
+```
+
+Examining the distribution of the true and predicted cell type labels in the Baron dataset reveals that all three methods have most difficulty with annotating acinar and ductal cells: The methods tend to predict too many cells to be acinar and too little cells to be ductal.
+
+## Annotating Muraro (2016)
+
+```{r table muraro}
+table.M.true <- as.data.frame(table(singleR.true.muraro.labels))
+names(table.M.true) <- c("cell_type", "True Muraro")
+table.M.singleR <- as.data.frame(table(singleR.pred.muraro.labels))
+names(table.M.singleR) <- c("cell_type", "SingleR")
+table.M.sc <- as.data.frame(table(sc.pred.muraro.labels))
+names(table.M.sc) <- c("cell_type", "scClassify")
+table.M.seurat <- as.data.frame(table(seurat.pred.muraro.labels))
+names(table.M.seurat) <- c("cell_type", "Seurat")
+table.M <- merge(merge(merge(table.M.true, table.M.singleR, by="cell_type"),
+                       table.M.sc, by="cell_type"), table.M.seurat, by="cell_type")
+knitr::kable(table.M) %>%
+  kable_styling()%>%
+  row_spec(c(1,5),bold=T)
+```
+
+Examining the distribution of the true and predicted cell type labels in the Muraro dataset again reveals that all three methods have difficulty with annotating acinar and ductal cells: The methods tend to predict too many cells to be ductal and too little cells to be acinar.
+
+It is reasonable that the methods have difficulty distinguishing acinar from ductal cells, as they are both part of the exocrine pancreas.
+
+What is also important to note is that the Baron dataset contains roughly four times the amount of annotated cells than the Muraro dataset, and that the abundances of cell types vary greatly within the datasets.
+
+# Adjusted Rand Index
+
+The [adjusted Rand index] (ARI) reports the similarity between two classifications of the same objects, in this case the similarity between the "true" classification of the cell labels and the "predicted" classifications, made by the individual methods. An adjusted Rand index of 1 would be a perfect agreement between the two classifications. 
+
+[adjusted Rand index]: https://www.rdocumentation.org/packages/pdfCluster/versions/1.0-3/topics/adj.rand.index
+
+## Annotating Baron (2016)
+```{r adjrandindex baron}
+ari_B_singleR <- adj.rand.index(singleR.pred.baron.labels, singleR.true.baron.labels)
+ari_B_scClassify <- adj.rand.index(sc.pred.baron.labels, sc.true.baron.labels)
+ari_B_seurat <- adj.rand.index(seurat.pred.baron.labels, seurat.true.baron.labels)
+classifiers <- c("SingleR", "scClassify", "Seurat")
+ARI<- c(ari_B_singleR, ari_B_scClassify, ari_B_seurat)
+ari.B <- data.frame(classifiers, ARI)
+knitr::kable(ari.B) %>%
+  kable_styling()
+```
+
+## Annotating Muraro (2016)
+```{r adjrandindex muraro}
+ari_M_singleR <- adj.rand.index(singleR.pred.muraro.labels, singleR.true.muraro.labels)
+ari_M_scClassify <- adj.rand.index(sc.pred.muraro.labels, sc.true.muraro.labels)
+ari_M_seurat <- adj.rand.index(seurat.pred.muraro.labels, seurat.true.muraro.labels)
+classifiers <- c("SingleR", "scClassify", "Seurat")
+ARI <- c(ari_M_singleR, ari_M_scClassify, ari_M_seurat)
+ari.M <- data.frame(classifiers, ARI)
+knitr::kable(ari.M) %>%
+  kable_styling()
+```
+
+All methods achieved high adjusted Rand index scores (>≈ 0.9) on the two datasets and thus performed well. _Seurat_ and _SingleR_ performed best on the Baron dataset, while _SingleR_ performed best on the Muraro dataset.
+
+# F1 scores
+
+The [F1 score] is defined as the harmonic mean of precision and recall: $$F1=2*\frac{precision*recall}{precision+recall}$$
+It is a good measure of accuracy of classification and robust in case of class imbalance. The F1 score was evaluated for the individual cell type labels. 
+
+[F1 score]: https://en.wikipedia.org/wiki/F-score#Formulation
+
+```{r  f1 score function}
+#function that computes f1 score for specific cell type label
+f1 <- function(label, predicted_labels, true_labels) {
+  #binarize prediction vectors for mutual class labels
+  pred <- predicted_labels==label
+  true <- true_labels==label
+  #compute f1 score
+  f1_pred <- prediction(as.numeric(pred), as.numeric(true))
+  f1_score <- performance(f1_pred, measure="f")@y.values[[1]][2]
+  return(f1_score)
+}
+
+labels <- c("alpha", "acinar", "beta", "delta", "ductal", "endothelial", "epsilon", "gamma") 
+#initialize f1 score vectors
+f1_B_singleR <- c()
+f1_B_scClassify <- c()
+f1_B_seurat <- c()
+f1_M_singleR <- c()
+f1_M_scClassify <- c()
+f1_M_seurat <- c()
+```
+
+## Annotating Baron (2016)
+```{r f1 score baron}
+for (label in labels) {
+  score_singleR <- f1(label=label, predicted_labels = singleR.pred.baron.labels, 
+                      true_labels = singleR.true.baron.labels)
+  f1_B_singleR <- c(f1_B_singleR, score_singleR)
+  score_sc <- f1(label=label, predicted_labels = sc.pred.baron.labels, 
+                 true_labels = sc.true.baron.labels)
+  f1_B_scClassify <- c(f1_B_scClassify, score_sc)
+  score_seurat <- f1(label=label, predicted_labels = seurat.pred.baron.labels, 
+                     true_labels = seurat.true.baron.labels)
+  f1_B_seurat <- c(f1_B_seurat, score_seurat)
+}
+
+f1_B_table <- data.frame(cell_type = labels, SingleR = f1_B_singleR, 
+                         scClassify = f1_B_scClassify, Seurat = f1_B_seurat)
+formattable(f1_B_table, list(area(col=SingleR:Seurat) ~color_tile("white", "darkseagreen3")))
+```
+
+```{r barplot baron}
+p_B <- f1_B_table %>%
+  gather("Classifier", "F1_score",-cell_type) %>%
+  ggplot(aes(cell_type, F1_score, fill = Classifier)) +
+  geom_bar(position = "dodge", stat = "identity") +
+  theme_bw()
+p_B + scale_fill_grey() + ggtitle("Baron Dataset: Plot of F1 scores for the individual cell types")
+```
+
+As we can see from the table and the barplot, for the Baron dataset the F1 scores for the individual cell types tend to be high for all three methods and all cell types. Acinar, ductal and especially epsilon cell types tend to have slightly lower F1 scores. However, as there are only a couple of epsilon cells in both datasets (2 in Muraro, 9 in Baron), the F1 scores for this cell type label should not be taken into consideration too much. It is still remarkable that all three methods still were able to detect some cells of this very rare cell type.
+
+Looking at the Baron dataset, none of the methods outperformed the others - all of them performed very well.
+
+## Annotating Muraro (2016)
+```{r f1 score muraro}
+for (label in labels) {
+  score_singleR <- f1(label=label, predicted_labels = singleR.pred.muraro.labels, 
+                      true_labels = singleR.true.muraro.labels)
+  f1_M_singleR <- c(f1_M_singleR, score_singleR)
+  score_sc <- f1(label=label, predicted_labels = sc.pred.muraro.labels, 
+                 true_labels = sc.true.muraro.labels)
+  f1_M_scClassify <- c(f1_M_scClassify, score_sc)
+  score_seurat <- f1(label=label, predicted_labels = seurat.pred.muraro.labels, 
+                     true_labels = seurat.true.muraro.labels)
+  f1_M_seurat <- c(f1_M_seurat, score_seurat)
+}
+
+f1_M_table <- data.frame(cell_type = labels, SingleR = f1_M_singleR, 
+                         scClassify = f1_M_scClassify, Seurat = f1_M_seurat)
+
+formattable(f1_M_table, list(area(col=SingleR:Seurat) ~color_tile("transparent", "darkseagreen3")))
+```
+
+```{r barplot muraro}
+p_M <- f1_M_table %>%
+  gather("Classifier", "F1_score",-cell_type) %>%
+  ggplot(aes(cell_type, F1_score, fill = Classifier)) +
+  geom_bar(position = "dodge", stat = "identity") +
+  theme_bw()
+p_M + scale_fill_grey() + ggtitle("Muraro Dataset: Plot of F1 scores for the individual cell types")
+```
+
+As we can see from the table and the barplot, for the Muraro dataset the F1 scores for the individual cell types are more variable across the methods. _SingleR_ seems to perform better in distinguishing acinar from ductal cells than _scClassify_ and _Seurat_, which perform poorly for these two cell types. Also, _Seurat_ performs worse in identifying endothelial cells than the other two methods, but this cell type is also very rare in the Muraro dataset. 
+
+Looking at the Muraro dataset, _SingleR_ outperformed the other two methods.
+
+# Conclusion
+
+It is important to note that due to the limited scope of this project, the analyses we were able to perform are very simple and limited, and thus it is difficult to make any concluding statements on the performance of these three methods. 
+
+**General conclusions for automated cell type annotation methods**:
+
+What can be said about automated cell type annotation methods in general, is the following:
+
+First of all, the performance is highly dependent on the combination of test and reference datasets. This was not only observed in our analyses of the Baron and Muraro dataset (where all three methods performed a lot better predicting labels for the Baron dataset with the Muraro dataset as reference than vice-versa), but also by @lin2019scclassify in their paper on _scClassify_, where they evaluated the performance of 16 methods on 30 training and test dataset pairs and found that the performance was strongly dependent on the combination of datasets. 
+
+Secondly, automated cell type annotation methods strongly depend on the quality of the (annotation of the) reference datasets.  Yet, the approach of combining multiple reference datasets instead of training the models on just a single reference datasets, might alleviate the issue of high dependency on the quality of the reference dataset. Also, one would like to have reference datasets of a reasonable size. Yet it was interesting that we found higher performance of the methods when using the smaller dataset as reference (Muraro), while we would have expected the opposite. 
+
+Lastly, preprocessing the cell type labels can be a hassle. The methods require the reference dataset to contain a superset of labels that are expected to be present in the test dataset. And while harmonizing all cell type labels for pancreas scRNA-seq data might be fairly straight-forward, it can take quite some time for PBMC data.
+
+So, all in all, we got the impression that the performance of automated cell type annotation methods is highly situation-dependent.
+
+**Conclusions for each method individually**:
+  
+**SingleR**:
+_SingleR_ is a robust nearest-neighbor classifier, which is easy to use and well documented. The underlying theory is simpler compared to the other two methods, making the usage more straigth-forward, but also less customizable. In our analysis, the classifications of _SingleR_ were solid for all cell types in both datasets. Especially, the method seemed to perform better in situations of low cell type abundances compared to the other two methods. 
+
+**scClassify**:
+_scClassify_ is a high-level classifier, which is taking the similarities between different groups of cell types into consideration by building a cell type tree. Although the underlying theory is more complex, the method is very well documented. The cell type annotations by _scClassify_ were solid for most cell types, yet the method seemed to have problems with low cell type abundances. Further, the default settings only involve one parameter combination of gene selection method and similarity metric and the full potential of _scClassify_ was not tested out. It would be interesting to see, whether the ensemble learning option, which combines mutliple parameter combinations and weights them by their training error, would significantly increase the performance. 
+
+**Seurat**:
+_Seurat_ is an environment that is, besides other applications in single-cell analysis, able of annotating cell types. Their "anchoring" methodology seems to be promising in combining multiple datasets across different technologies and even different modalities. The _Seurat_ environment is well-documented and appears to be very consistent and coordinated, but as they introduced new data structures, difficulties with integrating existing tools by Bioconductor could appear. In our analysis, the predictions by _Seurat_ were solid, however also struggling with the case of low cell type abundances. 
+
+In our analysis, we have investigated the theory and the performance of three different cell type annotation methods. Although they are all based on different statistical methods, the performance was similar in most cases and the differences only subtle. We therefore can't conclude what method outperformed the others. In order to do so, further combinations of reference and test data, datasets from other tissues and the full potential of every method would need to be explored.
+
+
+# References
+

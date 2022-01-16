@@ -1,0 +1,194 @@
+---
+title: "scClassify"
+site: workflowr::wflow_site
+output:
+  workflowr::wflow_html:
+    code_folding: show
+    toc: true
+editor_options:
+  chunk_output_type: console
+bibliography: ../ref.bibtex
+---
+
+# Theory
+
+The package _scClassify_ was developed by @lin2019scclassify and is a tool for automated cell-type annotation in single-cell RNA sequencing (scRNA-seq data) data. In short, _scClassify_ first constructs a cell-type hierarchy from a reference dataset and then uses an ensemble of different base classifiers to predict cell types at each branch of the hierarchy.
+
+Method description: 
+
+- The cell type tree is constructed by taking the union of all differentially expressed (DE) genes from one cell type to all other cell types. Then, the average expression of every gene and every cell type is calculated and the cell type tree is constructed using the hierarchical ordered partitioning and collapsing hybrid (HOPACH) algorithm. The algorithm allows each parent node to split into multiple child nodes, instead of only two [@van2003new], which is, according to @lin2019scclassify, more consistent with the natural
+progression from broad to more specific cell types.
+
+- At each node of the tree, an ensemble classifier is built from 30 possible base classifiers where each classifier is a combination of a gene selection method and a similarity metric. Each base classifier is then weighted depending on their training error, resulting in an ensemble classifier. 
+
+  - Possible gene selection methods are: DE, Differential expression, DD, differentially distributed; DV, differentially variable; BD, bimodally distributed; DP, differentially expressed proportions. 
+  
+  - Possible similarity metrics are: P, Pearson’s correlation; S, Spearman’s correlation; K, Kendall’s correlation; J, Jaccard distance; C, cosine distance; W, weighted rank correlation.
+
+- For prediction, _scClassify_ uses a multilevel approach starting at the root of the cell type tree. At each node, a query cell must have correlations higher than a certain threshold with its nearest neighbours and the weights of it's assigned cell type must be larger than a threshold (by default 0.7). The predicted cell type is related from the cell types of the _k_ nearest neighbors (default _k_ = 10) by a weighted _kNN_ classifier and the query cell is predicted to have the cell type with the greatest total weight. 
+
+- Further, _scClassify_ allows the integration of multiple reference data sets, where cell types are predicted from each reference data set individually and then weighted by the training error of the corresponding reference dataset. [@lin2019scclassify]
+
+For this analysis, we train a model for every dataset (only using one reference dataset) with the default parameters of _scClassify_, using the Pearson's correlation as a similarity metric, _limma_ (DE) for gene selection and the weighted _k_-nearest neighbors for gene type prediction. 
+
+
+
+```{r load packages}
+suppressMessages(library(SingleCellExperiment))
+suppressMessages(library(scClassify))
+suppressMessages(library(knitr))
+suppressMessages(library(BiocParallel))
+suppressMessages(library(scater))
+```
+
+# Loading the data
+
+```{r loading muraro, warning=FALSE, message=FALSE}
+muraro <- readRDS(file = "data/sce_muraro.rds")
+exprsMat_muraro <- assay(muraro, "logcounts") #create expression matrix
+true_labels_muraro <- as.data.frame(table(muraro$label))
+names(true_labels_muraro) <- c("cell_type", "True Muraro")
+```
+
+```{r loading baron, warning=FALSE, message=FALSE}
+baron <- readRDS(file = "data/sce_baron.rds")
+exprsMat_baron <- assay(baron, "logcounts") #create expression matrix
+true_labels_baron <- as.data.frame(table(baron$label))
+names(true_labels_baron) <- c("cell_type", "True Baron")
+```
+
+# Annotating Baron (2016)
+
+```{r baron scClassify, warning=FALSE, message=FALSE}
+baron_scClassify_res <- scClassify(exprsMat_train = exprsMat_muraro,
+                                             cellTypes_train = muraro$label,
+                                             exprsMat_test = list(baron = exprsMat_baron),
+                                             similarity = c("pearson"),
+                                             selectFeatures = c("limma"),
+                                             algorithm = c("WKNN"), verbose = FALSE)
+
+baron$label_pred <- baron_scClassify_res$testRes[[1]]$pearson_WKNN_limma$predLabelMat[,4]
+baron$unassigned <- baron_scClassify_res$testRes[[1]]$pearson_WKNN_limma$predLabelMat[,4] == "unassigned"
+```
+
+## Predictions
+
+```{r table true vs predicted baron, warning=FALSE, message=FALSE}
+pred_labels_baron <- as.data.frame(table(baron$label_pred))
+names(pred_labels_baron) <- c("cell_type", "Predicted by scClassify")
+labels_baron_scClassify <- merge(pred_labels_baron, true_labels_baron)
+knitr::kable(labels_baron_scClassify) #distribution of predicted labels
+```
+
+One characteristic of _scClassify_ is that it doesn't annotate some cells at all (calling them unassigned) and some only partially (e.g. acinar_ductal: means either acinar or ductal). We investigate these types of cells visually in the t-SNE plots, because we want to exclude them later from the results, to allow a better comparison between the methods. 
+
+## t-SNE plots
+
+```{r}
+p1.1 <- plotReducedDim(baron, "TSNE", colour_by = "unassigned") +  ggtitle(label = "Not completely assigned cells")
+p1.2 <- plotReducedDim(baron, "TSNE", colour_by = "label") +  ggtitle(label = "True Cell Type")
+
+ggpubr::ggarrange(p1.1, p1.2, common.legend = FALSE, legend = "right")
+```
+
+In total, 355 cells were not assigned to a single cell type. From the t-SNE plots, we see that most cells that are unassigned can be found in one cluster in the middle and one on the top of the plot, which are supposed to be delta and acinar cells. Because the other methods also had problems correctly discriminating these two cell types, we decided to exclude the unassigned cells from the evaluation part (also for the other two methods). We hope that this does not introduce too much of a bias in favor of the _scClassify_ method, due to the fact that all methods seem to struggle most with the classification of the same two cell types. 
+
+For comparing the predicted with the true cell type, we leave out all the unassigned cells. 
+
+```{r}
+p1.3 <- plotReducedDim(baron[,!baron$unassigned], "TSNE", colour_by = "label") +  ggtitle(label = "True Cell Type")
+p1.4 <- plotReducedDim(baron[,!baron$unassigned], "TSNE", colour_by = "label_pred") +  ggtitle(label = "Predicted Cell Type")
+
+ggpubr::ggarrange(p1.3, p1.4, common.legend = TRUE, legend = "right")
+```
+
+We see that the annotations performed by scClassify are relatively good. However, the small cluster between the two larger clusters of acinar and ductal cells was missclassified. Additionally, some delta cells from the cluster in the middle were incorrectly classified as beta cells. 
+This is also reflected in the table above: scClassify classified to many cells as acinar and too few as ductal, and additionally too few as delta. 
+
+# Annotating Muraro (2016)
+
+```{r muraro scClassify, warning=FALSE, message=FALSE}
+muraro_scClassify_res <- scClassify(exprsMat_train = exprsMat_baron,
+                                             cellTypes_train = baron$label,
+                                             exprsMat_test = list(muraro = exprsMat_muraro),
+                                             similarity = c("pearson"),
+                                             selectFeatures = c("limma"),
+                                             algorithm = c("WKNN"))
+
+muraro$label_pred <- muraro_scClassify_res$testRes[[1]]$pearson_WKNN_limma$predLabelMat[,3]
+muraro$unassigned <- muraro_scClassify_res$testRes[[1]]$pearson_WKNN_limma$predLabelMat[,3] == "unassigned"
+```
+
+## Predictions
+
+```{r table true vs predicted muraro, warning=FALSE, message=FALSE}
+pred_labels_muraro <- as.data.frame(table(muraro$label_pred))
+names(pred_labels_muraro) <- c("cell_type", "Predicted by scClassify")
+labels_muraro_scClassify <- merge(pred_labels_muraro, true_labels_muraro)
+knitr::kable(labels_muraro_scClassify) #distribution of predicted labels
+```
+
+## t-SNE plots
+
+Again, we start by investigating which cells were unassigned and to which clusters they belong. 
+
+```{r}
+p2.1 <- plotReducedDim(muraro, "TSNE", colour_by = "unassigned") +  ggtitle(label = "Not completely assigned cells")
+p2.2 <- plotReducedDim(muraro, "TSNE", colour_by = "label") +  ggtitle(label = "True Cell Type")
+
+ggpubr::ggarrange(p2.1, p2.2, common.legend = FALSE, legend = "right")
+```
+
+In total 30 cells were not assigned to a single cell type. Investigating the above t-SNE plots we see that most of them are belonging to acinar cells. 
+
+Again, we leave out all unassigned cells and compare the predicted with the true cell type. 
+
+```{r}
+p2.3 <- plotReducedDim(muraro[,!muraro$unassigned], "TSNE", colour_by = "label") +  ggtitle(label = "True Cell Type")
+p2.4 <- plotReducedDim(muraro[,!muraro$unassigned], "TSNE", colour_by = "label_pred") +  ggtitle(label = "Predicted Cell Type")
+
+ggpubr::ggarrange(p2.3, p2.4, common.legend = TRUE, legend = "right")
+```
+
+Overall, the predictions seem to be reasonably good. However, we see that many cells from the cluster in the bottom was misclassified as ductal cells instead of acinar cells. This can also be verified in the table above. For instance, scClassify only predicted $49$ out of the $218$ true acinar cells correctly. 
+
+# Saving objects for evaluation
+
+As already explained, we identify all cells, which are not assigned down to the tips, and remove them from the downstream analysis. This is done, because the unassigned cells are presumably harder to correctly identify for every method and therefore we can only compare the three methods, if these cells are exluded in the evaluation. 
+
+```{r remove not fully assigned cells and save, warning=FALSE, message=FALSE}
+#extract true and predicted labels
+pred.baron.labels <- baron_scClassify_res$testRes[[1]]$pearson_WKNN_limma$predRes
+true.baron.labels <- baron$label
+names(true.baron.labels) <- names(pred.baron.labels)
+
+pred.muraro.labels <- muraro_scClassify_res$testRes[[1]]$pearson_WKNN_limma$predRes
+true.muraro.labels <- muraro$label
+names(true.muraro.labels) <- names(pred.muraro.labels)
+
+# save logical with unassigned cells for removal in the other two methods
+unassigned_baron <- baron_scClassify_res$testRes[[1]]$pearson_WKNN_limma$predLabelMat[,4] == "unassigned"
+saveRDS(unassigned_baron, file="data/baron_unassigned_scClassify.rds")
+
+pred.baron.labels <- pred.baron.labels[!unassigned_baron]
+pred.baron.labels <- pred.baron.labels[!is.na(pred.baron.labels)]
+saveRDS(pred.baron.labels, file="data/scClassify.pred.baron.labels.rds")
+true.baron.labels <- true.baron.labels[!unassigned_baron]
+true.baron.labels <- true.baron.labels[!is.na(true.baron.labels)]
+saveRDS(true.baron.labels, file="data/scClassify.true.baron.labels.rds")
+
+unassigned_muraro <- muraro_scClassify_res$testRes[[1]]$pearson_WKNN_limma$predLabelMat[,3] == "unassigned"
+saveRDS(unassigned_muraro, file="data/muraro_unassigned_scClassify.rds")
+
+pred.muraro.labels <- pred.muraro.labels[!unassigned_muraro]
+pred.muraro.labels <- pred.muraro.labels[!is.na(pred.muraro.labels)]
+saveRDS(pred.muraro.labels, file="data/scClassify.pred.muraro.labels.rds")
+true.muraro.labels <- true.muraro.labels[!unassigned_muraro]
+true.muraro.labels <- true.muraro.labels[!is.na(true.muraro.labels)]
+saveRDS(true.muraro.labels, file="data/scClassify.true.muraro.labels.rds")
+```
+
+# References
+
+
+

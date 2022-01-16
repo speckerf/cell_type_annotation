@@ -1,0 +1,67 @@
+---
+title: "Overview"
+site: workflowr::wflow_site
+output:
+  workflowr::wflow_html:
+    toc: false
+editor_options:
+  chunk_output_type: console
+bibliography: ../ref.bibtex
+---
+
+## Project Cell Type Annotation Methods For Single Cell RNA-seq Data
+
+### Introduction
+
+Cell-type identification is an important part of the analysis of single cell RNA-seq data. Common approaches are unsupervised clustering and manual annotation based on a set of known marker genes. The downside of unsupervised clustering is that the number of clusters is usually not known in advance. Manual annotation, on the other hand, is highly time-consuming and the set of marker genes has to be identified in advance [@lin2019scclassify]. Thus, these approaches can be biased.
+
+In the past couple of years high-quality pre-labelled scRNA-seq have become more readily available, and thus a new approach has emerged: automated cell type annotation, i.e. supervised learning algorithms, which are trained on pre-labelled available reference datasets and used to automatically annotate new scRNA-seq datasets [@lin2019scclassify].
+Three methods performing automated cell type annotation have been selected for this project: [SingleR] (2019), [scClassify] (2020) and [Seurat v3] (2020). 
+SingleR and scClassify are both distributed via the Bioconductor universe, whereas the Seurat library is independent of Bioconductor.
+
+[Seurat v3]: https://satijalab.org/seurat/v3.2/integration.html
+[SingleR]: http://bioconductor.org/packages/release/bioc/html/SingleR.html
+[scClassify]: http://www.bioconductor.org/packages/release/bioc/html/scClassify.html
+
+### Datasets & Dataset Preprocessing
+
+We have selected two pre-labelled pancreas scRNA-seq datasets, the Baron and Muraro dataset, which are both available from the [scRNAseq library] as SingleCellExperiment objects:
+
+**Baron** dataset: From [this paper](https://pubmed.ncbi.nlm.nih.gov/27667365/), droplet-based scRNA-seq, 2016
+
+**Muraro** dataset: From [this paper](https://www.cell.com/cell-systems/fulltext/S2405-4712(16)30292-7?_returnURL=https%3A%2F%2Flinkinghub.elsevier.com%2Fretrieve%2Fpii%2FS2405471216302927%3Fshowall%3Dtrue), CEL-seq, 2016
+
+The datasets will be used both as reference and as test datasets.
+
+The datasets don't contain the same amount of cells: the Baron dataset is larger than the Muraro dataset. But both datasets more or less contain cells of the same set of cell type labels, though we had to perform some adjustment of labels, such as renaming labels, removing unlabelled/"unknown" labels, or removing cells with labels from one dataset that was not present in the other dataset, so that eventually the two datasets contained cells from the same set of cell type labels:
+
+* endothelial
+* alpha: produce glucagon (endocrine)
+* beta: produce insulin (endocrine)
+* delta: produce somatostatin (endocrine)
+* epsilon: produce ghrelin (endocrine)
+* gamma: (also known as pp cells) produce pancreatic polypeptide hormone (endocrine)
+* acinar (exocrine)
+* ductal (exocrine)
+
+Adjustment of cell type labels and quality control of the datasets were performed in the **Preprocessing** section.
+
+[scRNAseq library]: https://bioconductor.org/packages/release/data/experiment/vignettes/scRNAseq/inst/doc/scRNAseq.html#available-data-sets
+
+
+### Methods
+The three methods were each run once on the Baron dataset (with Muraro as reference) and once on the Muraro dataset (with Baron as reference). The theory behind the different methods is explored in the individual methods section.  
+
+The methods were run on the preprocessed datasets and their predictions were presented in form of cell type distributions and tSNE plots in the **Methods** section. 
+
+### Evaluation of Methods
+The predictions of the three methods were evaluated with two performance metrics in the **Evaluation** section:
+
+* adjusted Rand index
+* F1 scores for each cell type label
+
+### Conclusion
+All three methods performed reasonably well on the two datasets and it is difficult to identify a method, which outperforms the others. In general, the performance of these automated cell type annotation methods seems to be highly dependent on the combination of test and reference datasets, as well as the parameter settings for the methods. Based on our results and the limited scope of this project, it was not possible for us to come up with a definite conclusion on the performance of these three methods. 
+
+### References
+

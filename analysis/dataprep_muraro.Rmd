@@ -1,0 +1,159 @@
+---
+title: "Data preparation Muraro (2016)"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: console
+bibliography: ../ref.bibtex
+---
+
+```{r loading packages}
+suppressMessages(library(scRNAseq))
+suppressMessages(library(AnnotationHub))
+suppressMessages(library(scater))
+suppressMessages(library(scran))
+suppressMessages(library(scuttle))
+suppressMessages(library(scDblFinder))
+suppressMessages(library(BiocParallel))
+suppressMessages(library(knitr))
+suppressMessages(library(kableExtra))
+```
+
+# Loading the data
+
+We loaded the Muraro dataset directly from the _scRNAseq_ package as a SingleCellExperiment object. The dataset contains CEL-seq scRNA-seq data from human pancreas cells from 4 different donors [@muraro2016single].
+
+```{r loading data, warning=FALSE, message=FALSE}
+sce.muraro <- suppressMessages(MuraroPancreasData(ensembl = TRUE))
+dim(sce.muraro)
+```
+
+The option __ensebml = TRUE__ ensures that the gene symbols are converted to Ensembl IDs. Any genes that could not be matched to an Ensembl ID were discarded (2110 genes). We were left with $16940$ genes from $3072$ different cells. 
+
+# Quality Control
+
+Quality control was performed on the loaded Baron dataset. 
+
+First we tried to identify cells with relatively high proportion of mitochondrial genes, which should be removed, as this indicates damaged nuclei, and thus low-quality cells.
+
+## Visual Inspection before QC
+```{r mitochondrial genes}
+location <- rowRanges(sce.muraro)
+isMito <- grepl("^mt-", location$originalName, ignore.case=TRUE) | 
+  seqnames(location)=="MT" | seqnames(location)=="mt"
+ifelse(any(isMito), "There has been found at least one mitochondrial gene",
+       "There have not been found any mitochondrial genes")
+df <- perCellQCMetrics(sce.muraro)
+```
+
+Suprisingly, we saw that there are no mitochondrial genes left in the dataset. We assume that the authors have removed all mitochondrial genes beforehand.
+
+```{r plot1, warning=FALSE, message=FALSE}
+#get QC metrics:
+sce.muraro <- addPerCellQC(sce.muraro)
+sce.muraro <- addPerFeatureQC(sce.muraro)
+
+qc <- as.data.frame(colData(sce.muraro))
+ggplot(qc, aes(sum)) + geom_histogram() + facet_wrap(~donor) + scale_x_continuous(trans = 'log10') + ggtitle("Libary sizes of every genes split by donor") + ylab("Number of genes") + xlab("Library Size")
+```
+
+The histograms of the library sizes show bimodal distributions, especially in donor D28. What we would like to have though, are unimodal, approximately normally distributed library sizes.
+
+```{r plot2}
+ggplot(qc, aes(sum, detected)) + geom_point() + geom_density2d() + ylab("Number of detected genes") + xlab("Library size") + scale_x_continuous(trans = 'log10') + scale_y_continuous(trans = 'log10') + ggtitle("Library size vs. number of detected genes per cell")
+```
+
+As we can see from the plot, the range of library sizes as well as the range of the number of detected genes is too large. 
+
+## QC
+
+Thus, we have to perform quantitative outlier detection, in order to discard cells that have very low library size or a too low number of detected genes. Additionaly, we want to discard cells with a too high ERCC spike-in content, as this is symptomatic of loss of endogenous RNA [@amezquita2020orchestrating].
+
+```{r, warning=FALSE, message=FALSE}
+reasons <- quickPerCellQC(df, 
+    sub.fields="altexps_ERCC_percent")
+discard_reasons <- as.data.frame(colSums(as.matrix(reasons)))
+names(discard_reasons) <- "counts"
+knitr::kable(discard_reasons) %>%
+  kable_styling()%>%
+  row_spec(4,bold=T)
+#spike-ins
+sce.muraro$exclude_ERCC <- reasons$high_altexps_ERCC_percent
+sce.muraro$discard <- reasons$discard
+plotColData(sce.muraro, x="donor", y="altexps_ERCC_percent", colour_by = I(reasons$high_altexps_ERCC_percent)) + xlab("Donor") + 
+  ggtitle("Remove outliers based on ERCC spike-ins")
+
+# remove outliers
+sce.muraro <- sce.muraro[,!apply(reasons, MARGIN = 1, any)]
+```
+
+From the table, we see that a total of $726$ cells were excluded. Further, we see that most cells were excluded for more than one reason. In total, $611$ cells were excluded due to low library size, $669$ are exluded due to low number of features and $696$ cells are excluded based on high spike-in counts. 
+
+```{r qc, warning=FALSE, message=FALSE}
+# get QC metrics:
+sce.muraro <- addPerCellQC(sce.muraro)
+sce.muraro <- addPerFeatureQC(sce.muraro)
+```
+
+## Visual inspection after QC
+
+```{r qc visual, warning=FALSE, message=FALSE}
+# plots
+qc <- as.data.frame(colData(sce.muraro))
+
+ggplot(qc, aes(sum)) + geom_histogram() + facet_wrap(~donor) + ggtitle("Libary sizes of every genes split by donor") + scale_x_continuous(trans = "log10") + ylab("Number of genes") + xlab("log10(Library Size)")
+```
+
+Looking at the histogram, we see that the library sizes are now reasonably distributed. Additionally, we see that most cells that have been excluded, came from donor D28. 
+
+```{r plot3, warning=FALSE, message=FALSE}
+ggplot(qc, aes(sum, detected)) + geom_point() + geom_density2d() + ylab("Number of detected genes") + xlab("Library size)") + scale_x_continuous(trans = 'log10') + scale_y_continuous(trans = 'log10') + ggtitle("Library size vs. number of detected genes per cell")
+```
+
+After removal of all outliers, we see that the range of library sizes, as well as the number of detected genes, is now much narrower than before. 
+  
+
+# Unifying Label Names
+
+In order to be able to compare the two datasets by @muraro2016single and @baron2016single, we need to ensure that they have the same cell type labels. Therefore we rename "duct" to "ductal and "pp" to "gamma", similarly performed by @lin2019scclassify. Further, we remove all cells that are either labelled "unclear" or "mesenchymal", because these label types are not present in the Baron dataset. We are left with 2022 cells, belonging to 8 different cell types.  
+
+
+```{r harmonize labels, warning=FALSE, message=FALSE}
+sce.muraro$label[sce.muraro$label=="duct"] <- "ductal" #renaming
+sce.muraro$label[sce.muraro$label=="pp"] <- "gamma" #renaming
+sce.muraro <- sce.muraro[,!(sce.muraro$label %in% c(NA,"unclear", "mesenchymal"))] #removing
+muraro.labels.counts <- as.data.frame(table(sce.muraro$label))
+names(muraro.labels.counts) <- c("cell type", "frequency")
+total <- data.frame("total", sum(muraro.labels.counts$frequency))
+names(total) <- c("cell type", "frequency")
+muraro.labels.counts <- rbind(muraro.labels.counts, total)
+saveRDS(muraro.labels.counts, file="data/muraro.labels.counts.rds")
+knitr::kable(muraro.labels.counts) %>%
+  kable_styling()%>%
+  row_spec(9,bold=T)
+```
+
+# tSNE plot
+
+Finally, we produce normalized counts and perform dimensionality reduction for visual inspection purposes. 
+```{r log counts, warning=FALSE, message=FALSE}
+sce.muraro <- logNormCounts(sce.muraro)
+```
+
+```{r PCA and t-SNE, warning=FALSE, message=FALSE}
+sce.muraro <- runPCA(sce.muraro)
+sce.muraro <- runTSNE(sce.muraro, dimred="PCA")
+```
+
+```{r}
+plotReducedDim(sce.muraro, "TSNE", colour_by="label") #original labels
+```
+We can see that the "true" cell type labels correspond quite nicely to the clusters in the tSNE plot. 
+
+## Save object
+
+```{r save sce object, warning=FALSE, message=FALSE}
+saveRDS(sce.muraro,file = "data/sce_muraro.rds")
+```
+
+# References
+

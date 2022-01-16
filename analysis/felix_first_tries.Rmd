@@ -1,0 +1,139 @@
+---
+title: "felix_first_tries"
+site: workflowr::wflow_site
+output:
+  workflowr::wflow_html:
+    toc: false
+editor_options:
+  chunk_output_type: console
+---
+
+## Loading ref dataset
+
+```{r}
+#library(devtools)
+#devtools::install_github("SydneyBioX/scClassify")
+library(scClassify)
+
+
+suppressPackageStartupMessages(library("celldex"))
+suppressPackageStartupMessages(library(SingleCellExperiment))
+suppressPackageStartupMessages(library(SingleR))
+```
+
+```{r load ref}
+ref <- celldex::HumanPrimaryCellAtlasData(ensembl=TRUE)
+ref
+
+
+
+table(colData(ref)$label.main)
+```
+
+```{r}
+suppressPackageStartupMessages(library(TENxPBMCData))
+
+tenx_pbmc4k <- TENxPBMCData(dataset = "pbmc4k")
+tenx_pbmc4k
+
+```
+
+## prediction using SingleR
+```{r}
+predictions <- SingleR(test=tenx_pbmc4k, assay.type.test=1, 
+    ref=ref, labels=ref$label.main)
+table(predictions$labels)
+
+```
+
+
+
+## prediction using scClassify
+```{r}
+library(scran)
+library(scater)
+library(scuttle)
+
+
+tenx_pbmc4k <- logNormCounts(tenx_pbmc4k)
+
+## only select test cells with labels that appear at least 5 times in the reference dataset
+col_index <- colData(ref)$label.main %in% names(which(table(as.factor(colData(ref)$label.main)) > 5))
+ref_subset <- ref[,col_index]
+colnames(tenx_pbmc4k) <- seq(1,dim(tenx_pbmc4k)[2])
+
+
+
+scClassify_test <- scClassify(exprsMat_train = assay(ref_subset, "logcounts"),
+                                      cellTypes_train = colData(ref_subset)$label.main,
+                                      exprsMat_test = assay(tenx_pbmc4k, "logcounts"),
+                                      tree = "HOPACH",
+                                      algorithm = "WKNN",
+                                      selectFeatures = c("limma"),
+                                      similarity = "pearson",
+                                      weighted_ensemble = FALSE,
+                                      returnList = FALSE,
+                                      verbose = TRUE)
+
+summary(rownames(tenx_pbmc4k) %in% rownames(ref_subset))
+```
+
+
+
+### single cell pancreas dataset wang et al.
+
+```{r}
+data("scClassify_example")
+wang_cellTypes <- scClassify_example$wang_cellTypes
+exprsMat_wang_subset <- scClassify_example$exprsMat_wang_subset
+exprsMat_wang_subset <- as(exprsMat_wang_subset, "dgCMatrix")
+
+
+
+data("trainClassExample_xin")
+trainClassExample_xin
+
+
+scClassify::features(trainClassExample_xin)
+plotCellTypeTree(cellTypeTree(trainClassExample_xin))
+
+
+pred_res <- predict_scClassify(exprsMat_test = exprsMat_wang_subset,
+                               trainRes = trainClassExample_xin,
+                               cellTypes_test = wang_cellTypes,
+                               algorithm = "WKNN",
+                               features = c("limma"),
+                               similarity = c("pearson", "spearman"),
+                               prob_threshold = 0.7,
+                               verbose = TRUE)
+
+
+table(pred_res$pearson_WKNN_limma$predRes, wang_cellTypes)
+table(pred_res$spearman_WKNN_limma$predRes, wang_cellTypes)
+
+
+
+```
+
+
+```{r}
+#install.packages('Seurat')
+#library(Seurat)
+```
+
+
+<!-- ###  -->
+<!-- good webpage: https://hemberg-lab.github.io/scRNA.seq.datasets/human/pancreas/ -->
+
+
+
+```{r}
+BiocManager::version()
+BiocManager::valid()
+```
+
+
+```{r}
+sessionInfo()
+```
+

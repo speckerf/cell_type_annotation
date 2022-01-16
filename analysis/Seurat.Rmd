@@ -1,0 +1,186 @@
+---
+title: "Seurat"
+site: workflowr::wflow_site
+output:
+  workflowr::wflow_html:
+    code_folding: show
+    toc: true
+editor_options:
+  chunk_output_type: console
+bibliography: ../ref.bibtex
+---
+
+# Theory
+
+The R package _Seurat_ is a tool for quality control, analysis, and exploration of single-cell RNA-seq data. The version _Seurat v3_ introduced an anchoring procedure that is designed to integrate across technologies and modalities. In short, the method determines anchors between a pair of dataset and then uses these anchors to transfer cell type labels from the reference dataset to the query dataset. [@stuart2019comprehensive]
+
+Method description:
+
+- After normalization, feature selection and dimensionality reduction, the key step of _Seurat_ is the unsupervised determination of anchors between two datasets. An anchor represents two cells (one from each dataset), which are predicted to come from an identical biological state. 
+
+- Anchors are found in the low-dimensional space, but scored in the high-dimensional space of the expression data in a procedure further described in @stuart2019comprehensive. Anchors are then weighted based on their score and the distance between the query cell and the anchor and we obtain a weight Matrix $M$, which represents the association between all pairs of query cells and anchors. 
+
+- After having found, scored and weighted the anchors, we can use them to transfer metadata (in our case cell labels) from the reference to the query dataset. The predictions $P_l$ are calculated by multiplying the anchor classification matrix $L$ with the weights matrix $M$: $$P_l=LW^T$$
+The binary classification matrix $L$ contains the classification information for each anchor cell in the reference dataset
+
+The principle of anchors can also be used to first integrate multiple reference datasets into a single reference and then in a second step transfer cell types from combined references onto a query dataset. A further posibility of _Seurat_ is to integrate data from different modalities (e.g. integrate scRNA-seq data with scATAC-seq data) into a single dataset, which might resolve differences between cell types that would remain unresolvable with either scRNA-seq or scATAC-seq data alone. 
+
+The workflow below is adopted from the [official webpage of the software](https://satijalab.org/seurat/v4.0/reference_mapping.html).
+
+
+```{r loading packages}
+suppressMessages(library(SingleCellExperiment))
+suppressMessages(library(scRNAseq))
+suppressMessages(library(AnnotationHub))
+suppressMessages(library(Seurat))
+suppressMessages(library(scater))
+suppressMessages(library(cowplot))
+suppressMessages(library(uwot))
+suppressMessages(library(ggplot2))
+suppressMessages(library(patchwork))
+```
+
+# Loading the data
+We read in the datasets:
+
+```{r load datasets, warning=FALSE, message=FALSE}
+# muraro
+muraro <- readRDS(file = "data/sce_muraro.RDS")
+true_labels_muraro <- as.data.frame(table(muraro$label))
+names(true_labels_muraro) <- c("cell_type", "True Muraro")
+
+# baron
+baron <- readRDS(file = "data/sce_baron.RDS")
+true_labels_baron <- as.data.frame(table(baron$label))
+names(true_labels_baron) <- c("cell_type", "True Baron")
+```
+
+Next, we have to convert the datasets to _Seurat_ objects. We are preprocessing the data using _SCTransform()_, which normalizes, scales and finds variable features for the data. The function uses regularized negative binomial regression to normalize and stabilize the variance [@hafemeister2019normalization]. 
+
+```{r convert to seurat, warning=FALSE, message=FALSE}
+muraro <- as.Seurat(muraro)
+baron <- as.Seurat(baron)
+
+baron <- SCTransform(baron, verbose = FALSE)
+baron <- RunPCA(baron, npcs = 30, verbose = FALSE)
+baron <- RunUMAP(baron, reduction = "pca", dims = 1:30)
+baron <- RunTSNE(baron, reduction = "pca", dims = 1:30)
+
+muraro <- SCTransform(muraro, verbose = FALSE)
+muraro <- RunPCA(muraro, npcs = 30, verbose = FALSE)
+muraro <- RunUMAP(muraro, reduction = "pca", dims = 1:30)
+muraro <- RunTSNE(muraro, reduction = "pca", dims = 1:30)
+
+```
+
+# Annotating Baron (2016)
+
+We start with Baron (2016) as our query dataset and Muraro (2016) as the reference.
+
+```{r baron seurat, warning=FALSE, message=FALSE}
+anchors <- FindTransferAnchors(
+  reference = muraro,
+  query = baron,
+  normalization.method = "SCT",
+  reference.reduction = "pca",
+  dims = 1:30, verbose = FALSE
+)
+
+predictions <- TransferData(anchorset = anchors, refdata = muraro$label, 
+    dims = 1:30)
+
+baron <- AddMetaData(baron, metadata = predictions)
+```
+
+## Predictions
+
+```{r table baron predictions, warning=FALSE, message=FALSE}
+pred_labels_baron <- as.data.frame(table(baron$predicted.id))
+names(pred_labels_baron) <- c("cell_type", "Predicted by Seurat")
+labels_baron_Seurat <- merge(pred_labels_baron, true_labels_baron)
+knitr::kable(labels_baron_Seurat) #distribution of predicted labels
+```
+
+## t-SNE plots
+
+```{r}
+p1.1 = DimPlot(baron, reduction = "tsne", group.by = "predicted.id", label = FALSE) + ggtitle(label = "Predicted Cell Type")
+
+p1.2 = DimPlot(baron, reduction = "tsne", group.by = "label", label = FALSE) +  ggtitle(label = "True Cell Type")
+
+ggpubr::ggarrange(p1.1, p1.2, common.legend = TRUE, legend = "bottom")
+```
+
+Overall Seurat's predictions for the Baron dataset seem to be quite accurate. However, we can see in the t-SNE plots that there is one minor cluster of ductal cells in the center right was misclassified as acinar cells. This is also reflected in the table above: Seurat classified to many cells as acinar and too few as ductal. 
+
+# Annotating Muraro (2016)
+Now we switch reference and query dataset and perform the same analysis. 
+
+```{r muraro seurat, warning=FALSE, message=FALSE}
+anchors <- FindTransferAnchors(
+  reference = baron,
+  query = muraro,
+  normalization.method = "SCT",
+  reference.reduction = "pca",
+  dims = 1:30, verbose = FALSE
+)
+
+predictions <- TransferData(anchorset = anchors, refdata = baron$label, 
+    dims = 1:30)
+
+muraro <- AddMetaData(muraro, metadata = predictions)
+```
+
+## Predictions
+
+```{r table muraro predictions, warning=FALSE, message=FALSE}
+pred_labels_muraro <- as.data.frame(table(muraro$predicted.id))
+names(pred_labels_muraro) <- c("cell_type", "Predicted by Seurat")
+labels_muraro_Seurat <- merge(pred_labels_muraro, true_labels_muraro)
+knitr::kable(labels_muraro_Seurat) #distribution of predicted labels
+```
+
+## t-SNE plots
+
+```{r}
+p2.1 = DimPlot(muraro, reduction = "tsne", group.by = "predicted.id") + ggtitle(label = "Predicted Cell Type")
+
+p2.2 = DimPlot(muraro, reduction = "tsne", group.by = "label") + ggtitle(label = "True Cell Type")
+
+ggpubr::ggarrange(p2.1, p2.2, common.legend = TRUE, legend = "bottom")
+```
+
+Overall Seurat's predictions for the Muraro dataset seem to be quite accurate with one exception. The t-SNE plots shows that the a large part of the cluster in the top was misclassified as ductal cells, where they are supposed to be acinar cells. In this case, the same two cell types (acinar and ductal) caused troubles, 
+
+This is also reflected in the table above: Seurat classified to many cells as acinar and too few as ductal. 
+
+# Saving objects for evaluation
+
+In order to compare the predictions by the three methods, we again remove cells that where not fully assigned to a label by _scClassify_. This is done, because the unassigned cells are presumably harder to correctly classify for every method and therefore we can only compare the three methods, if these cells are exluded in the evaluation. 
+
+```{r predicted and true label vectors, warning=FALSE, message=FALSE}
+#extract true and predicted labels
+pred.baron.labels <- baron$predicted.id
+true.baron.labels <- baron$label
+
+unassigned_baron <- readRDS(file="data/baron_unassigned_scClassify.rds")
+
+pred.baron.labels <- pred.baron.labels[!unassigned_baron]
+saveRDS(pred.baron.labels, file="data/Seurat.pred.baron.labels.rds")
+
+true.baron.labels <- true.baron.labels[!unassigned_baron]
+saveRDS(true.baron.labels, file="data/Seurat.true.baron.labels.rds")
+
+pred.muraro.labels <- muraro$predicted.id
+true.muraro.labels <- muraro$label
+
+unassigned_muraro <- readRDS(file="data/muraro_unassigned_scClassify.rds")
+
+pred.muraro.labels <- pred.muraro.labels[!unassigned_muraro]
+saveRDS(pred.muraro.labels, file="data/Seurat.pred.muraro.labels.rds")
+
+true.muraro.labels <- true.muraro.labels[!unassigned_muraro]
+saveRDS(true.muraro.labels, file="data/Seurat.true.muraro.labels.rds")
+```
+
+# References

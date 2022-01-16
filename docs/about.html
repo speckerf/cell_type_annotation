@@ -1,0 +1,887 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>About</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/flatly.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
+<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+
+<link rel="icon" href="https://github.com/workflowr/workflowr-assets/raw/master/img/reproducible.png">
+<!-- Add a small amount of space between sections. -->
+<style type="text/css">
+div.section {
+  padding-top: 12px;
+}
+</style>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 51px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h2 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h3 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h4 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h5 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h6 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #ffffff;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">project-cell-type-annotation</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">
+    <span class="fas fa-home"></span>
+     
+    Home
+  </a>
+</li>
+<li>
+  <a href="about.html">About</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Preprocessing
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="dataprep_baron.html">Baron Dataset</a>
+    </li>
+    <li>
+      <a href="dataprep_muraro.html">Muraro Dataset</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Methods
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="SingleR.html">SingleR</a>
+    </li>
+    <li>
+      <a href="scClassify.html">scClassify</a>
+    </li>
+    <li>
+      <a href="Seurat.html">Seurat</a>
+    </li>
+  </ul>
+</li>
+<li>
+  <a href="evaluation.html">Evaluation</a>
+</li>
+<li>
+  <a href="license.html">License</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+<div class="btn-group pull-right">
+<button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu" style="min-width: 50px;">
+<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
+</ul>
+</div>
+
+
+
+<h1 class="title toc-ignore">About</h1>
+
+</div>
+
+
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-report" data-toggle="collapse" data-target="#workflowr-report">
+<span class="glyphicon glyphicon-list" aria-hidden="true"></span> workflowr <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+</button>
+</p>
+<div id="workflowr-report" class="collapse">
+<ul class="nav nav-tabs">
+<li class="active">
+<a data-toggle="tab" href="#summary">Summary</a>
+</li>
+<li>
+<a data-toggle="tab" href="#checks"> Checks <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> </a>
+</li>
+<li>
+<a data-toggle="tab" href="#versions">Past versions</a>
+</li>
+</ul>
+<div class="tab-content">
+<div id="summary" class="tab-pane fade in active">
+<p>
+<strong>Last updated:</strong> 2021-01-03
+</p>
+<p>
+<strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 2 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 0
+</p>
+<p>
+<strong>Knit directory:</strong> <code>project-cell-type-annotation/</code> <span class="glyphicon glyphicon-question-sign" aria-hidden="true" title="This is the local directory in which the code in this file was executed."> </span>
+</p>
+<p>
+This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis was created with <a
+  href="https://github.com/jdblischak/workflowr">workflowr</a> (version 1.6.2). The <em>Checks</em> tab describes the reproducibility checks that were applied when the results were created. The <em>Past versions</em> tab lists the development history.
+</p>
+<hr>
+</div>
+<div id="checks" class="tab-pane fade">
+<div id="workflowr-checks" class="panel-group">
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguptodate"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>R Markdown file:</strong> up-to-date </a>
+</p>
+</div>
+<div id="strongRMarkdownfilestronguptodate" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great! Since the R Markdown file has been committed to the Git repository, you know the exact version of the code that produced these results.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomsta426hs2020projectcelltypeannotationtreecfb17fbd36a262be6ebc7540fdca62922d170878targetblankcfb17fba"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/sta426hs2020/project-cell-type-annotation/tree/cfb17fbd36a262be6ebc7540fdca62922d170878" target="_blank">cfb17fb</a> </a>
+</p>
+</div>
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomsta426hs2020projectcelltypeannotationtreecfb17fbd36a262be6ebc7540fdca62922d170878targetblankcfb17fba" class="panel-collapse collapse">
+<div class="panel-body">
+<p>
+Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility.
+</p>
+<p>
+The results in this page were generated with repository version <a href="https://github.com/sta426hs2020/project-cell-type-annotation/tree/cfb17fbd36a262be6ebc7540fdca62922d170878" target="_blank">cfb17fb</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
+</p>
+<p>
+Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
+</p>
+<pre><code>
+Ignored files:
+    Ignored:    .DS_Store
+    Ignored:    .Rhistory
+    Ignored:    .Rproj.user/
+    Ignored:    analysis/.DS_Store
+    Ignored:    analysis/.Rhistory
+    Ignored:    data/.DS_Store
+    Ignored:    data/.Rapp.history
+
+Unstaged changes:
+    Deleted:    analysis/PBMC_datasets.Rmd
+    Deleted:    analysis/SingleR_no_label_adjustment.Rmd
+    Modified:   analysis/_site.yml
+    Modified:   analysis/scClassify.Rmd
+    Modified:   data/baron_unassigned_scClassify.rds
+    Modified:   data/scClassify.pred.baron.labels.rds
+    Modified:   data/scClassify.pred.muraro.labels.rds
+    Modified:   data/scClassify.true.baron.labels.rds
+    Modified:   data/scClassify.true.muraro.labels.rds
+    Modified:   data/singleR.pred.baron.labels.rds
+    Modified:   data/singleR.pred.muraro.labels.rds
+    Modified:   data/singleR.true.baron.labels.rds
+    Modified:   data/singleR.true.muraro.labels.rds
+
+</code></pre>
+<p>
+Note that any generated files, e.g. HTML, png, CSS, etc., are not included in this status report because it is ok for generated content to have uncommitted changes.
+</p>
+</div>
+</div>
+</div>
+</div>
+<hr>
+</div>
+<div id="versions" class="tab-pane fade">
+
+<p>
+These are the previous versions of the repository in which changes were made to the R Markdown (<code>analysis/about.Rmd</code>) and HTML (<code>docs/about.html</code>) files. If you’ve configured a remote Git repository (see <code>?wflow_git_remote</code>), click on the hyperlinks in the table below to view the files as they were in that past version.
+</p>
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+File
+</th>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+<th>
+Message
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/sta426hs2020/project-cell-type-annotation/blob/cfb17fbd36a262be6ebc7540fdca62922d170878/analysis/about.Rmd" target="_blank">cfb17fb</a>
+</td>
+<td>
+stinea98
+</td>
+<td>
+2021-01-03
+</td>
+<td>
+wflow_publish(“analysis/about.Rmd”)
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/sta426hs2020/project-cell-type-annotation/6e72f997d0fa9d4c806b532d77b63517906c4f7e/docs/about.html" target="_blank">6e72f99</a>
+</td>
+<td>
+stinea98
+</td>
+<td>
+2021-01-03
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/sta426hs2020/project-cell-type-annotation/blob/572472a82875daa2412c9ca6d6905e7d048cc368/analysis/about.Rmd" target="_blank">572472a</a>
+</td>
+<td>
+stinea98
+</td>
+<td>
+2021-01-03
+</td>
+<td>
+wflow_publish(“analysis/about.Rmd”)
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/sta426hs2020/project-cell-type-annotation/5fc8cfbb9f91dd65a2fa84579f50a85bee3625a1/docs/about.html" target="_blank">5fc8cfb</a>
+</td>
+<td>
+stinea98
+</td>
+<td>
+2021-01-02
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/sta426hs2020/project-cell-type-annotation/blob/407b044596c7ec321244ce0d977077e8b8da2329/analysis/about.Rmd" target="_blank">407b044</a>
+</td>
+<td>
+stinea98
+</td>
+<td>
+2021-01-02
+</td>
+<td>
+wflow_publish(“analysis/about.Rmd”)
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/sta426hs2020/project-cell-type-annotation/blob/ff4faba4de5d73ad9e69ed6a70464e8a8ce8ab7c/analysis/about.Rmd" target="_blank">ff4faba</a>
+</td>
+<td>
+stinea98
+</td>
+<td>
+2021-01-02
+</td>
+<td>
+newest changes
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/sta426hs2020/project-cell-type-annotation/50aaa8b4c21293ebd57fa9e7b957caf766555d14/docs/about.html" target="_blank">50aaa8b</a>
+</td>
+<td>
+stinea98
+</td>
+<td>
+2021-01-02
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/sta426hs2020/project-cell-type-annotation/blob/f410405573f9b909841223836a9882112a57fdf6/analysis/about.Rmd" target="_blank">f410405</a>
+</td>
+<td>
+stinea98
+</td>
+<td>
+2021-01-02
+</td>
+<td>
+wflow_publish(“analysis/about.Rmd”)
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/sta426hs2020/project-cell-type-annotation/e9d0d942c41ae11717c93b3e6aca264f4bf839eb/docs/about.html" target="_blank">e9d0d94</a>
+</td>
+<td>
+speckerf
+</td>
+<td>
+2020-12-30
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/sta426hs2020/project-cell-type-annotation/blob/ace69e47b5eea6b870e93740ac472d8964437408/analysis/about.Rmd" target="_blank">ace69e4</a>
+</td>
+<td>
+speckerf
+</td>
+<td>
+2020-12-30
+</td>
+<td>
+try out code hiding
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/sta426hs2020/project-cell-type-annotation/ba2053dd99e36b2e7c2758f737241fd0d3cc52bd/docs/about.html" target="_blank">ba2053d</a>
+</td>
+<td>
+speckerf
+</td>
+<td>
+2020-12-30
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/sta426hs2020/project-cell-type-annotation/blob/bcd8fda3bb66a38245aadc78e9a3f184dcf6beb8/analysis/about.Rmd" target="_blank">bcd8fda</a>
+</td>
+<td>
+speckerf
+</td>
+<td>
+2020-12-30
+</td>
+<td>
+set up citations
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/sta426hs2020/project-cell-type-annotation/53e5c3ed3b23757abe7a189b1e5fb2236d811265/docs/about.html" target="_blank">53e5c3e</a>
+</td>
+<td>
+speckerf
+</td>
+<td>
+2020-12-16
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/sta426hs2020/project-cell-type-annotation/blob/faca42bce53bf065aef71d4da728b502179525b3/analysis/about.Rmd" target="_blank">faca42b</a>
+</td>
+<td>
+speckerf
+</td>
+<td>
+2020-12-16
+</td>
+<td>
+adjust yaml header
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/sta426hs2020/project-cell-type-annotation/38164c14fb19532bd857fbbd8c28a1f35c01da62/docs/about.html" target="_blank">38164c1</a>
+</td>
+<td>
+speckerf
+</td>
+<td>
+2020-12-03
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/sta426hs2020/project-cell-type-annotation/blob/b560d984e740bcb8e57d918288b8f7db08ef03b5/analysis/about.Rmd" target="_blank">b560d98</a>
+</td>
+<td>
+speckerf
+</td>
+<td>
+2020-12-03
+</td>
+<td>
+Start workflowr project.
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<hr>
+</div>
+</div>
+</div>
+<div id="project-cell-type-annotation-methods-for-single-cell-rna-seq-data" class="section level2">
+<h2>Project Cell Type Annotation Methods For Single Cell RNA-seq Data</h2>
+<div id="introduction" class="section level3">
+<h3>Introduction</h3>
+<p>Cell-type identification is an important part of analysis of single cell RNA-seq data. Common approaches are unsupervised clustering and manual annotation based on a set of known marker genes. The downside of unsupervised clustering is that the number of clusters is usually not known in advance. The downside of manual annotation is that it is highly time-consuming and that the set of marker genes has to be identified in adance (which it often is not) <span class="citation">(Lin et al. 2019)</span>. Thus, these approaches can be biased, because of the marker gene selection. In the past couple of years high-quality pre-labelled scRNA-seq have become more readily available, and thus a new approach has emerged: automated cell type annotation, i.e. supervised learning algorithms, which are trained on pre-labelled available reference datasets and used to automatically annotate new scRNA-seq datasets <span class="citation">(Lin et al. 2019)</span>. The three methods that have been selected for this project are <a href="http://bioconductor.org/packages/release/bioc/html/SingleR.html">SingleR</a> (2019), <a href="http://www.bioconductor.org/packages/release/bioc/html/scClassify.html">scClassify</a> (2020) and <a href="https://satijalab.org/seurat/v4.0/reference_mapping.html">Seurat v4 Reference Mapping</a> (2020). SingleR and scClassify can take data in any form, whereas the Seurat Reference Mapping requires data stored as a Seurat object.</p>
+</div>
+<div id="datasets-dataset-preprocessing" class="section level3">
+<h3>Datasets &amp; Dataset Preprocessing</h3>
+<p>We have selected two pre-labelled pancreas scRNA-seq datasets, the Baron and Muraro dataset, which are both available from the <a href="https://bioconductor.org/packages/release/data/experiment/vignettes/scRNAseq/inst/doc/scRNAseq.html#available-data-sets">scRNAseq library</a> as SingleCellExperiment objects:</p>
+<p><strong>Baron</strong> dataset: From <a href="https://pubmed.ncbi.nlm.nih.gov/27667365/">this paper</a>, droplet-based scRNA-seq, 2016</p>
+<p><strong>Muraro</strong> dataset: From <a href="https://www.cell.com/cell-systems/fulltext/S2405-4712(16)30292-7?_returnURL=https%3A%2F%2Flinkinghub.elsevier.com%2Fretrieve%2Fpii%2FS2405471216302927%3Fshowall%3Dtrue">this paper</a>, CEL-seq, 2016</p>
+<p>The datasets will be used both as reference and as test datasets.</p>
+<p>The datasets don’t contain the same amount of cells: the Baron dataset is larger than the Muraro dataset. But both datasets more or less contain cells of the same set of cell type labels, though we had to perform some adjustment of labels, such as renaming labels, removing unlabelled/“unknown” labels, or removing cells with labels from one dataset that was not present in the other dataset, so that eventually the two datasets contained cells from the same set of cell type labels:</p>
+<ul>
+<li>endothelial</li>
+<li>alpha: produce glucagon (endocrine)</li>
+<li>beta: produce insulin (endocrine)</li>
+<li>delta: produce somatostatin (endocrine)</li>
+<li>epsilon: produce ghrelin (endocrine)</li>
+<li>gamma: (also known as pp cells) produce pancreatic polypeptide hormone (endocrine)</li>
+<li>acinar (exocrine)</li>
+<li>ductal (exocrine)</li>
+</ul>
+<p>Adjustment of cell type labels and quality control of the datasets were performed in the <strong>Preprocessing</strong> section.</p>
+</div>
+<div id="methods" class="section level3">
+<h3>Methods</h3>
+<p>The three methods were each run once on the Baron dataset (with Muraro as reference) and once on the Muraro dataset (with Baron as reference).</p>
+<ul>
+<li>SingleR was run in classical mode.</li>
+<li>ScClassify was run with pearson correlation as similarity metric, limma for gene selection and kNN for gene prediction, as we figured that this configuration would be most similar to SingleR. Thus, the ensemble learning was disabled.</li>
+<li>The Seurat v4 Reference mapping required an additional conversion from SingleCellExperiment to a Seurat object.</li>
+</ul>
+<p>The individual methods were run on the preprocessed datasets and their predictions were presented in form of cell type distributions and tSNE plots in the <strong>Methods</strong> section.</p>
+</div>
+<div id="evaluation-of-methods" class="section level3">
+<h3>Evaluation of Methods</h3>
+<p>The predictions of the three methods were evaluated with two performance metrics:</p>
+<ul>
+<li>adjusted Rand index</li>
+<li>F1 scores for each cell type label</li>
+</ul>
+</div>
+<div id="discussion-conclusion-only-brainstorming" class="section level3">
+<h3>Discussion &amp; Conclusion (only brainstorming)</h3>
+<ul>
+<li>reference to the scClassify paper: huge amount of combinations of datasets were compared –&gt; how well a method performs strongly depends on the combination of datasets</li>
+<li>a lot depends on the quality of the reference datasets (qc and annotation) and it requires reference dataset that contains a superset of the labels that we expect to be present in our dataset. also depends on whether you’re dealing with pancreas or PBMC scRNAseq data for example.</li>
+<li>preprocessing cell type labels can be a hassle, especially if dealing with PBMC datasets, where there is a huge amount of different cell types (in high resolution)</li>
+<li>personal preference whether one usually works with SingleCellExperiments (–&gt; SingleR or scClassify) or Seurat (–&gt; Seurat v4 Reference Mapping), performance (in our simple case) is very similar</li>
+<li>this methods comparison is very “simple”</li>
+</ul>
+</div>
+<div id="references" class="section level3 unnumbered">
+<h3>References</h3>
+<div id="refs" class="references">
+<div id="ref-lin2019scclassify">
+<p>Lin, Yingxin, Yao Cao, Hani J Kim, Agus Salim, Terence P Speed, Dave Lin, Pengyi Yang, and Jean Yee Hwa Yang. 2019. “ScClassify: Hierarchical Classification of Cells.” <em>bioRxiv</em>. Cold Spring Harbor Laboratory, 776948.</p>
+</div>
+</div>
+</div>
+</div>
+
+
+<!-- Adjust MathJax settings so that all math formulae are shown using
+TeX fonts only; see
+http://docs.mathjax.org/en/latest/configuration.html.  This will make
+the presentation more consistent at the cost of the webpage sometimes
+taking slightly longer to load. Note that this only works because the
+footer is added to webpages before the MathJax javascript. -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    "HTML-CSS": { availableFonts: ["TeX"] }
+  });
+</script>
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+<script>
+$(document).ready(function () {
+  window.initializeCodeFolding("show" === "show");
+});
+</script>
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

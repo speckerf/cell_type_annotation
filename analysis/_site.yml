@@ -1,0 +1,34 @@
+name: "project-cell-type-annotation"
+output_dir: ../docs
+navbar:
+  title: "project-cell-type-annotation"
+  left:
+  - text: Home
+    icon: fa-home
+    href: index.html
+  - text: Overview
+    href: overview.html
+  - text: Preprocessing
+    menu:
+    - text: Baron Dataset
+      href: dataprep_baron.html
+    - text: Muraro Dataset
+      href: dataprep_muraro.html
+  - text: Methods
+    menu:
+    - text: SingleR
+      href: SingleR.html
+    - text: scClassify
+      href: scClassify.html
+    - text: Seurat
+      href: Seurat.html
+  - text: Evaluation
+    href: evaluation.html
+  - text: License
+    href: license.html
+output:
+  workflowr::wflow_html:
+    toc: yes
+    toc_float: yes
+    theme: flatly
+    highlight: kate

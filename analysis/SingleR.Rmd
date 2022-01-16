@@ -1,0 +1,153 @@
+---
+title: "SingleR"
+site: workflowr::wflow_site
+output:
+  workflowr::wflow_html:
+    code_folding: show
+    toc: true
+editor_options:
+  chunk_output_type: console
+bibliography: ../ref.bibtex
+---
+
+# Theory 
+
+The package _SingleR_ is an automated annotation method for scRNA-seq data developed in 2019 by Aaron Lun [@aran2019reference]. In short, it's a robust variant of nearest-neighbors classification. It labels cells in the test dataset based on similarity to the cells in the pre-labelled reference dataset (which can be either bulk RNA-seq or scRNAseq). 
+
+Method description [@singleRbook]:
+
+- Marker genes are identified by performing pairwise comparison between cells from a label of interest and cells from all the other labels. The genes that are upregulated in the label of interest in each pairwise comparison are then identified as marker genes.
+
+- For every cell in the test dataset the Spearman correlation between its expression profile of marker genes and the expression profile of marker genes of each cell in the reference dataset is computed.
+
+- For every test cell a per-label score is then determined as the quantile of the correlations across all (reference) samples with that label.
+
+- The label with the highest score will be SingleR's prediction for that test cell.
+
+For this analysis, the _SingleR_ "classic" mode with one reference dataset was used. However, _SingleR_ also has the option of using multiple references, like the other two methods [@singleRbook]:
+
+- Either performing the annotation with each reference individually and then combining the scores across the references (similar to scClassify)
+
+- Or first creating a combined reference and then performing the annotation with the combined reference (similar to Seurat)
+
+_SingleR_ was run once on the Baron dataset (with Muraro as reference) and vice versa. 
+
+```{r loading the packages}
+suppressMessages(library(SingleR))
+suppressMessages(library(scRNAseq))
+suppressMessages(library(ensembldb))
+suppressMessages(library(scater))
+suppressMessages(library(knitr))
+suppressMessages(library(scuttle))
+suppressMessages(library(ggpubr))
+```
+
+# Loading the data
+
+The datasets have been preprocessed (see Preprocessing section) and are loaded as SingleCellExperiment objects.
+
+```{r loading muraro}
+#loading muraro dataset
+muraro <- readRDS(file = "data/sce_muraro.rds")
+true_labels_muraro <- as.data.frame(table(muraro$label))
+names(true_labels_muraro) <- c("cell_type", "True Muraro")
+```
+
+```{r loading baron}
+#loading baron dataset
+baron <- readRDS(file = "data/sce_baron.rds")
+true_labels_baron <- as.data.frame(table(baron$label))
+names(true_labels_baron) <- c("cell_type", "True Baron")
+```
+
+# Annotating Baron (2016)
+
+Making predictions for the Baron dataset (with the Muraro dataset as reference):
+```{r SingleR workflow baron}
+pred.baron <- SingleR(test = baron, ref = muraro,
+    labels = muraro$label, de.method = "classic")
+```
+
+## Predictions
+
+```{r table baron}
+pred_labels_baron <- as.data.frame(table(pred.baron$labels))
+names(pred_labels_baron) <- c("cell_type", "Predicted by SingleR")
+labels_baron_singleR <- merge(pred_labels_baron, true_labels_baron)
+knitr::kable(labels_baron_singleR, caption = "Distribution of predicted labels compared to true labels") 
+```
+
+## t-SNE plots 
+
+t-SNE plot of true baron labels and SingleR's predicted baron labels
+```{r, t-SNE plot baron}
+p1.1 = plotReducedDim(baron, "TSNE", colour_by="label") + ggtitle("True Cell Type") #true
+p1.2 = plotReducedDim(baron, "TSNE", colour_by=I(pred.baron$labels)) + ggtitle("Predicted Cell Type")#predicted
+
+ggarrange(p1.1, p1.2, common.legend = TRUE, legend = "bottom")
+```
+
+Overall SingleR's prediction for the Baron dataset seems to be quite accurate. 
+However, as can be seen in the t-SNE plots, SingleR seems to have misclassified a cluster of ductal cells as acinar cells in the top middle of the tSNE plot. 
+This is also reflected in the table above: SingleR has classified too many cells as acinar and too little as ductal.
+
+# Annotating Muraro (2016)
+
+Making predictions for the Muraro dataset (with the Baron dataset as reference):
+```{r singleR workflow muraro}
+pred.muraro <- SingleR(test = muraro, ref = baron,
+    labels = baron$label, de.method = "classic")
+```
+
+## Predictions
+```{r table muraro}
+pred_labels_muraro <- as.data.frame(table(pred.muraro$labels))
+names(pred_labels_muraro) <- c("cell_type", "Predicted by SingleR")
+labels_muraro_singleR <- merge(pred_labels_muraro, true_labels_muraro)
+knitr::kable(labels_muraro_singleR, caption = "Distribution of predicted labels compared to true labels") #distribution of predicted labels
+```
+
+## t-SNE plots 
+
+t-SNE plot of true muraro labels and SingleR's predicted muraro labels
+```{r, t-SNE plot muraro}
+p2.1 = plotReducedDim(muraro, "TSNE", colour_by="label") + ggtitle("True Cell Type") #true
+p2.2 = plotReducedDim(muraro, "TSNE", colour_by=I(pred.muraro$labels)) + ggtitle("Predicted Cell Type")#predicted
+
+ggarrange(p2.1, p2.2, common.legend = TRUE, legend = "bottom")
+```
+
+Overall SingleR's prediction for the Muraro dataset seems to be quite accurate. 
+However, as can be seen in the t-SNE plots, SingleR seems to have misclassified a small cluster of acinar cells as ductal cells in the bottom of the tSNE plot.
+This is also reflected in the table above: SingleR has classified too many cells as ductal and too little as acinar.
+
+
+# Saving objects for evaluation
+
+The true and predicted label vectors were extracted from the results to be used for the evaluation section later on. Also, cells labelled "unassigned" and thus removed in the scClassify analysis (because they were not assigned to a single cell type, but a parent node) were removed from the SingleR dataset too, in order to be able to compare the methods in the evaluation section. 
+
+```{r predicted and true label vectors}
+#Baron: extract true and predicted labels
+pred.baron.labels <- pred.baron$labels
+true.baron.labels <- baron@colData@listData[["label"]]
+unassigned_baron <- readRDS(file="data/baron_unassigned_scClassify.rds") 
+pred.baron.labels <- pred.baron.labels[!unassigned_baron]
+pred.baron.labels <- pred.baron.labels[!is.na(pred.baron.labels)]
+saveRDS(pred.baron.labels, file="data/singleR.pred.baron.labels.rds")
+true.baron.labels <- true.baron.labels[!unassigned_baron]
+true.baron.labels <- true.baron.labels[!is.na(true.baron.labels)]
+saveRDS(true.baron.labels, file="data/singleR.true.baron.labels.rds")
+
+#Muraro: extract true and predicted labels
+pred.muraro.labels <- pred.muraro$labels
+true.muraro.labels <- muraro@colData@listData[["label"]]
+unassigned_muraro <- readRDS(file="data/muraro_unassigned_scClassify.rds")
+pred.muraro.labels <- pred.muraro.labels[!unassigned_muraro]
+pred.muraro.labels <- pred.muraro.labels[!is.na(pred.muraro.labels)]
+saveRDS(pred.muraro.labels, file="data/singleR.pred.muraro.labels.rds")
+true.muraro.labels <- true.muraro.labels[!unassigned_muraro]
+true.muraro.labels <- true.muraro.labels[!is.na(true.muraro.labels)]
+saveRDS(true.muraro.labels, file="data/singleR.true.muraro.labels.rds")
+```
+
+# References
