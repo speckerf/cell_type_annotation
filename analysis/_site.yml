@@ -1,7 +1,7 @@
-name: "project-cell-type-annotation"
+name: project-cell-type-annotation
 output_dir: ../docs
 navbar:
-  title: "project-cell-type-annotation"
+  title: project-cell-type-annotation
   left:
   - text: Home
     icon: fa-home
@@ -26,6 +26,10 @@ navbar:
     href: evaluation.html
   - text: License
     href: license.html
+  right:
+  - icon: fab fa-github
+    text: Source code
+    href: https://github.com/speckerf/cell_type_annotation
 output:
   workflowr::wflow_html:
     toc: yes
