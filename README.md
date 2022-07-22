@@ -1,6 +1,7 @@
 # project-cell-type-annotation
 
-A [workflowr][] project by Felix Specker & Stine Anzböck.
+See project webpage: [https://speckerf.github.io/cell_type_annotation/index.html]
+A [workflowr][] project by Felix Specker & Stine Anzböck available
 
 [workflowr]: https://github.com/jdblischak/workflowr
 
